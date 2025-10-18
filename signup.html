@@ -7,18 +7,26 @@
 <style>
 body { 
   font-family: Poppins, sans-serif; 
-  background: #f4f6f8; 
-  display: flex; 
-  justify-content: center; 
-  align-items: center; 
-  height: 100vh; 
+  background: url('https://i0.wp.com/metrocdodev.com/wp-content/uploads/2024/08/image-510.png?resize=1024%2C768&ssl=1') no-repeat center center fixed; 
+  background-size: cover; 
   margin: 0; 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+body::before {
+  content: '';
+  position: fixed;
+  top:0; left:0; right:0; bottom:0;
+  background-color: rgba(0,0,0,0.5); /* dark overlay */
+  z-index: -1;
 }
 .container { 
-  background: #fff; 
+  background: rgba(255,255,255,0.95); 
   padding: 30px; 
   border-radius: 10px; 
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1); 
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2); 
   width: 350px; 
 }
 input, button {
