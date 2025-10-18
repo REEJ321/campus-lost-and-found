@@ -103,11 +103,26 @@ const supabase = createClient(
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF5cHZ3a3htdHJmZ25maGhjeGlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA3ODcxNjAsImV4cCI6MjA3NjM2MzE2MH0.Mdam3ABGs8eF0682iSuv6UAOAF7BOIWTzhTaz-w5m2s"
 );
 
+// Auto-redirect logged-in users
+window.addEventListener('load', async () => {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (session) {
+    const { data: profile } = await supabase
+      .from("user_profiles")
+      .select("role")
+      .eq("id", session.user.id)
+      .single();
+
+    if (profile?.role === "admin") location.href = "admin.html";
+    else location.href = "student.html";
+  }
+});
+
+// Login
 document.getElementById("loginBtn").addEventListener("click", async () => {
   const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value;
   if (!email || !password) return alert("Please enter email and password");
-
 
   const { data: loginData, error: loginError } = await supabase.auth.signInWithPassword({ email, password });
   if (loginError) {
@@ -127,6 +142,7 @@ document.getElementById("loginBtn").addEventListener("click", async () => {
   else location.href = "student.html";
 });
 
+// Toggle password visibility
 const passwordInput = document.getElementById("password");
 const toggle = document.getElementById("togglePassword");
 toggle.addEventListener("click", () => {
@@ -139,7 +155,9 @@ toggle.addEventListener("click", () => {
   }
 });
 </script>
+
 </body>
 </html>
+
 
 
