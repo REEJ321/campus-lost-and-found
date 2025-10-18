@@ -10,7 +10,10 @@ body {
   background: url('https://i0.wp.com/metrocdodev.com/wp-content/uploads/2024/08/image-510.png?resize=1024%2C768&ssl=1') no-repeat center center fixed; 
   background-size: cover; 
   margin: 0; 
-  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
 }
 body::before {
   content: '';
@@ -25,7 +28,6 @@ body::before {
   border-radius: 10px; 
   box-shadow: 0 2px 8px rgba(0,0,0,0.2); 
   width: 350px; 
-  margin: 80px auto;
 }
 input, button {
   width: 100%;
@@ -98,7 +100,7 @@ a:hover {
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 const supabase = createClient(
   "https://qypvwkxmtrfgnfhhcxia.supabase.co",
-  "YOUR_SUPABASE_ANON_KEY"
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF5cHZ3a3htdHJmZ25maGhjeGlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA3ODcxNjAsImV4cCI6MjA3NjM2MzE2MH0.Mdam3ABGs8eF0682iSuv6UAOAF7BOIWTzhTaz-w5m2s"
 );
 
 document.getElementById("loginBtn").addEventListener("click", async () => {
@@ -107,16 +109,12 @@ document.getElementById("loginBtn").addEventListener("click", async () => {
 
   if (!email || !password) return alert("Please enter email and password");
 
-  // Sign in
   const { data: loginData, error: loginError } = await supabase.auth.signInWithPassword({ email, password });
   if (loginError) {
-    if (loginError.message.includes("not confirmed")) {
-      return alert("Your email is not confirmed. Please check your inbox.");
-    }
+    if (loginError.message.includes("not confirmed")) return alert("Your email is not confirmed.");
     return alert("Login failed: " + loginError.message);
   }
 
-  // Fetch role from user_profiles table
   const { data: profile, error: profileError } = await supabase
     .from("user_profiles")
     .select("role")
@@ -125,15 +123,10 @@ document.getElementById("loginBtn").addEventListener("click", async () => {
 
   if (profileError) return alert("Failed to fetch role: " + profileError.message);
 
-  // Redirect based on role
-  if (profile.role === "admin") {
-    location.href = "admin.html";
-  } else {
-    location.href = "student.html";
-  }
+  if (profile.role === "admin") location.href = "admin.html";
+  else location.href = "student.html";
 });
 
-// Toggle password visibility
 const passwordInput = document.getElementById("password");
 const toggle = document.getElementById("togglePassword");
 toggle.addEventListener("click", () => {
