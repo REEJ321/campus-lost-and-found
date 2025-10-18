@@ -106,6 +106,7 @@ const supabase = createClient(
 document.getElementById("loginBtn").addEventListener("click", async () => {
   const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value;
+  if (!email || !password) return alert("Please enter email and password");
 
 
   const { data: loginData, error: loginError } = await supabase.auth.signInWithPassword({ email, password });
@@ -140,4 +141,5 @@ toggle.addEventListener("click", () => {
 </script>
 </body>
 </html>
+
 
