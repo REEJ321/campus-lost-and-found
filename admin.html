@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin - Post Lost Items</title>
+  <style>
+    body { font-family: Poppins, sans-serif; background: #f4f6f8; margin: 0; }
+    header { background: #2c3e50; color: #fff; padding: 1rem; display: flex; justify-content: space-between; align-items: center; }
+    .container { max-width: 600px; margin: 40px auto; background: #fff; padding: 25px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    label { display: block; margin-top: 10px; font-weight: 600; }
+    input, textarea { width: 100%; padding: 10px; margin-top: 5px; border-radius: 6px; border: 1px solid #ccc; }
+    button { margin-top: 15px; padding: 10px 20px; border: none; background: #3498db; color: #fff; font-weight: bold; border-radius: 6px; cursor: pointer; }
+    button:hover { background: #2980b9; }
+  </style>
+</head>
+<body>
+  <header>
+    <h2>Admin Dashboard</h2>
+    <button id="logoutBtn">Logout</button>
+  </header>
+
+  <div class="container">
+    <form id="postForm">
+      <label>Item Name</label>
+      <input type="text" id="name" required>
+
+      <label>Description</label>
+      <textarea id="description" rows="3" required></textarea>
+
+      <label>Location Found</label>
+      <input type="text" id="location" required>
+
+      <label>Date Found</label>
+      <input type="date" id="date" required>
+
+      <label>Found By (Student Name)</label>
+      <input type="text" id="found_by" required>
+
+      <label>Upload Image</label>
+      <input type="file" id="image" accept="image/*" required>
+
+      <button type="submit">Post Item</button>
+    </form>
+  </div>
+
+  <script type="module">
+    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+    const supabase = createClient(
+      'https://qypvwkxmtrfgnfhhcxia.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF5cHZ3a3htdHJmZ25maGhjeGlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA3ODcxNjAsImV4cCI6MjA3NjM2MzE2MH0.Mdam3ABGs8eF0682iSuv6UAOAF7BOIWTzhTaz-w5m2s'
+    );
+
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+      await supabase.auth.signOut();
+      location.href = 'index.html';
+    });
+
+    document.getElementById('postForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const name = document.getElementById('name').value;
+      const description = document.getElementById('description').value;
+      const locationFound = document.getElementById('location').value;
+      const dateFound = document.getElementById('date').value;
+      const foundBy = document.getElementById('found_by').value;
+      const imageFile = document.getElementById('image').files[0];
+
+      if (!imageFile) return alert('Please upload an image');
+
+      // Upload to storage
+      const fileName = `${Date.now()}-${imageFile.name}`;
+      const { data: uploadData, error: uploadError } = await supabase
+        .storage.from('lost-item-images')
+        .upload(fileName, imageFile);
+
+      if (uploadError) return alert('Image upload failed: ' + uploadError.message);
+
+      const { data: { publicUrl } } = supabase
+        .storage.from('lost-item-images')
+        .getPublicUrl(fileName);
+
+      const { error: dbError } = await supabase.from('lost_items').insert([{
+        item_name: name,
+        description: description,
+        location: locationFound,
+        date_found: dateFound,
+        found_by: foundBy,
+        image_url: publicUrl
+      }]);
+
+      if (dbError) return alert('Database insert failed: ' + dbError.message);
+
+      alert('Item posted successfully!');
+      e.target.reset();
+    });
+  </script>
+</body>
+</html>

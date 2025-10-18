@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student Login - Lost & Found</title>
+<style>
+body { 
+  font-family: Poppins, sans-serif; 
+  background: #f4f6f8; 
+  display: flex; 
+  justify-content: center; 
+  align-items: center; 
+  height: 100vh; 
+  margin: 0; 
+}
+.container { 
+  background: #fff; 
+  padding: 30px; 
+  border-radius: 10px; 
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1); 
+  width: 350px; 
+}
+input, button {
+  width: 100%;
+  box-sizing: border-box;
+}
+input { 
+  padding: 10px; 
+  margin-top: 10px; 
+  border-radius: 6px; 
+  border: 1px solid #ccc; 
+}
+button { 
+  padding: 10px; 
+  margin-top: 15px; 
+  border: none; 
+  background: #3498db; 
+  color: #fff; 
+  font-weight: bold; 
+  border-radius: 6px; 
+  cursor: pointer; 
+}
+button:hover { 
+  background: #2980b9; 
+}
+h2 { 
+  text-align: center; 
+  margin: 0; 
+}
+p { 
+  text-align: center; 
+  margin-top: 10px; 
+  font-size: 0.9rem; 
+}
+a { 
+  color: #3498db; 
+  text-decoration: none; 
+}
+a:hover { 
+  text-decoration: underline; 
+}
+/* Show/Hide password icon */
+.password-container {
+  position: relative;
+}
+.password-container span {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  user-select: none;
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <h2>Student Login</h2>
+  <input type="email" id="email" placeholder="Email" required>
+  
+  <div class="password-container">
+    <input type="password" id="password" placeholder="Password" required>
+    <span id="togglePassword">🙈</span>
+  </div>
+  
+  <button id="loginBtn">Login</button>
+  <p>No account? <a href="signup.html">Register</a></p>
+</div>
+
+<script type="module">
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+const supabase = createClient(
+  "https://qypvwkxmtrfgnfhhcxia.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF5cHZ3a3htdHJmZ25maGhjeGlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA3ODcxNjAsImV4cCI6MjA3NjM2MzE2MH0.Mdam3ABGs8eF0682iSuv6UAOAF7BOIWTzhTaz-w5m2s"
+);
+
+// Login
+document.getElementById("loginBtn").addEventListener("click", async () => {
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
+
+  if (!email || !password) return alert("Please enter email and password");
+
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+
+  if (error) {
+    if (error.message.includes("not confirmed")) {
+      return alert("Your email is not confirmed. Please check your inbox.");
+    }
+    return alert("Login failed: " + error.message);
+  }
+
+  location.href = "student.html";
+});
+
+// Toggle password visibility
+const passwordInput = document.getElementById("password");
+const toggle = document.getElementById("togglePassword");
+toggle.addEventListener("click", () => {
+  if (passwordInput.type === "password") {
+    passwordInput.type = "text";
+    toggle.textContent = "🙉";
+  } else {
+    passwordInput.type = "password";
+    toggle.textContent = "🙈";
+  }
+});
+</script>
+</body>
+</html>
