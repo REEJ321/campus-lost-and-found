@@ -10,6 +10,7 @@ body {
   background: url('https://i0.wp.com/metrocdodev.com/wp-content/uploads/2024/08/image-510.png?resize=1024%2C768&ssl=1') no-repeat center center fixed; 
   background-size: cover; 
   margin: 0; 
+  position: relative;
 }
 body::before {
   content: '';
@@ -18,20 +19,13 @@ body::before {
   background-color: rgba(0,0,0,0.5); /* dark overlay */
   z-index: -1;
 }
-header { 
-  background: rgba(44,62,80,0.85); 
-  color: #fff; 
-  padding: 1rem; 
-  display: flex; 
-  justify-content: space-between; 
-  align-items: center; 
-}
 .container { 
-  background: #fff; 
+  background: rgba(255,255,255,0.95); 
   padding: 30px; 
   border-radius: 10px; 
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1); 
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2); 
   width: 350px; 
+  margin: 80px auto;
 }
 input, button {
   width: 100%;
@@ -104,10 +98,9 @@ a:hover {
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 const supabase = createClient(
   "https://qypvwkxmtrfgnfhhcxia.supabase.co",
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF5cHZ3a3htdHJmZ25maGhjeGlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA3ODcxNjAsImV4cCI6MjA3NjM2MzE2MH0.Mdam3ABGs8eF0682iSuv6UAOAF7BOIWTzhTaz-w5m2s"
+  "YOUR_SUPABASE_ANON_KEY"
 );
 
-// Login
 document.getElementById("loginBtn").addEventListener("click", async () => {
   const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value;
@@ -123,7 +116,7 @@ document.getElementById("loginBtn").addEventListener("click", async () => {
     return alert("Login failed: " + loginError.message);
   }
 
-  // Fetch user role from user_profiles table
+  // Fetch role from user_profiles table
   const { data: profile, error: profileError } = await supabase
     .from("user_profiles")
     .select("role")
@@ -155,4 +148,3 @@ toggle.addEventListener("click", () => {
 </script>
 </body>
 </html>
-
