@@ -101,11 +101,27 @@ const supabase = createClient(
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF5cHZ3a3htdHJmZ25maGhjeGlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA3ODcxNjAsImV4cCI6MjA3NjM2MzE2MH0.Mdam3ABGs8eF0682iSuv6UAOAF7BOIWTzhTaz-w5m2s'
 );
 
+// ------------------
+// SESSION PROTECTION
+// ------------------
+window.addEventListener('load', async () => {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) {
+    location.href = 'index.html'; // redirect to login if not logged in
+  }
+});
+
+// ------------------
+// LOGOUT
+// ------------------
 document.getElementById('logoutBtn').addEventListener('click', async () => {
   await supabase.auth.signOut();
   location.href = 'index.html';
 });
 
+// ------------------
+// POST LOST ITEM
+// ------------------
 document.getElementById('postForm').addEventListener('submit', async (e) => {
   e.preventDefault();
   const name = document.getElementById('name').value;
@@ -141,7 +157,11 @@ document.getElementById('postForm').addEventListener('submit', async (e) => {
   fetchItems();
 });
 
+// ------------------
+// FETCH & DISPLAY ITEMS
+// ------------------
 const grid = document.getElementById('itemsGrid');
+
 async function fetchItems() {
   const { data, error } = await supabase.from('lost_items').select('*').order('date_found', { ascending: false });
   if (error) return alert('Failed to fetch items: ' + error.message);
@@ -158,6 +178,7 @@ async function fetchItems() {
         <button class="deleteBtn">Delete</button>
       </div>
     `;
+    // DELETE ITEM
     card.querySelector('.deleteBtn').addEventListener('click', async () => {
       if (!confirm('Are you sure you want to delete this item?')) return;
       const path = item.image_url.split('/').pop();
@@ -170,8 +191,10 @@ async function fetchItems() {
   });
 }
 
+// Initial fetch
 fetchItems();
 </script>
 </body>
 </html>
+
 
