@@ -5,13 +5,23 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin - Post Lost Items</title>
 <style>
-  body { font-family: Poppins, sans-serif; background: #f4f6f8; margin: 0; }
-  header { background: #2c3e50; color: #fff; padding: 1rem; display: flex; justify-content: space-between; align-items: center; }
-  .container { max-width: 600px; margin: 40px auto; background: #fff; padding: 25px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-  label { display: block; margin-top: 10px; font-weight: 600; }
-  input, textarea, select { width: 100%; padding: 10px; margin-top: 5px; border-radius: 6px; border: 1px solid #ccc; }
-  button { margin-top: 15px; padding: 10px 20px; border: none; background: #3498db; color: #fff; font-weight: bold; border-radius: 6px; cursor: pointer; }
-  button:hover { background: #2980b9; }
+body { font-family: Poppins, sans-serif; background: #f4f6f8; margin: 0; }
+header { background: #2c3e50; color: #fff; padding: 1rem; display: flex; justify-content: space-between; align-items: center; }
+#logoutBtn { background: #e74c3c; border: none; padding: 8px 12px; color: #fff; border-radius: 6px; cursor: pointer; }
+#logoutBtn:hover { background: #c0392b; }
+.container { max-width: 800px; margin: 20px auto; background: #fff; padding: 25px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+label { display: block; margin-top: 10px; font-weight: 600; }
+input, textarea, select { width: 100%; padding: 10px; margin-top: 5px; border-radius: 6px; border: 1px solid #ccc; }
+button { margin-top: 15px; padding: 10px 20px; border: none; background: #3498db; color: #fff; font-weight: bold; border-radius: 6px; cursor: pointer; }
+button:hover { background: #2980b9; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; margin-top: 30px; }
+.card { background: #fff; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); overflow: hidden; display: flex; flex-direction: column; }
+.card img { width: 100%; height: 160px; object-fit: cover; }
+.card-body { padding: 10px; flex: 1; display: flex; flex-direction: column; }
+.card-body h4 { margin: 0 0 5px 0; font-size: 1rem; }
+.card-body p { margin: 0; font-size: 0.85rem; color: #555; }
+.deleteBtn { margin-top: auto; background: #e74c3c; }
+.deleteBtn:hover { background: #c0392b; }
 </style>
 </head>
 <body>
@@ -39,7 +49,6 @@
 
     <label>Category</label>
     <select id="category" required>
-      <option value="">Select a category</option>
       <option value="Electronics">Electronics</option>
       <option value="Wallet">Wallet</option>
       <option value="Keys">Keys</option>
@@ -53,16 +62,14 @@
 
     <button type="submit">Post Item</button>
   </form>
+
+  <div class="grid" id="itemsGrid"></div>
 </div>
 
 <script type="module">
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-const supabase = createClient(
-  'https://qypvwkxmtrfgnfhhcxia.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF5cHZ3a3htdHJmZ25maGhjeGlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA3ODcxNjAsImV4cCI6MjA3NjM2MzE2MH0.Mdam3ABGs8eF0682iSuv6UAOAF7BOIWTzhTaz-w5m2s'
-);
+const supabase = createClient('https://qypvwkxmtrfgnfhhcxia.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF5cHZ3a3htdHJmZ25maGhjeGlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA3ODcxNjAsImV4cCI6MjA3NjM2MzE2MH0.Mdam3ABGs8eF0682iSuv6UAOAF7BOIWTzhTaz-w5m2s');
 
-// Logout
 document.getElementById('logoutBtn').addEventListener('click', async () => {
   await supabase.auth.signOut();
   location.href = 'index.html';
@@ -82,26 +89,19 @@ document.getElementById('postForm').addEventListener('submit', async (e) => {
 
   if (!imageFile) return alert('Please upload an image');
 
-  // Upload image to Supabase Storage
   const fileName = `${Date.now()}-${imageFile.name}`;
-  const { data: uploadData, error: uploadError } = await supabase
-    .storage.from('lost-item-images')
-    .upload(fileName, imageFile);
-
+  const { error: uploadError } = await supabase.storage.from('lost-item-images').upload(fileName, imageFile);
   if (uploadError) return alert('Image upload failed: ' + uploadError.message);
 
-  const { data: { publicUrl } } = supabase
-    .storage.from('lost-item-images')
-    .getPublicUrl(fileName);
+  const { data: { publicUrl } } = supabase.storage.from('lost-item-images').getPublicUrl(fileName);
 
-  // Insert into lost_items table
   const { error: dbError } = await supabase.from('lost_items').insert([{
     item_name: name,
-    description: description,
+    description,
     location: locationFound,
     date_found: dateFound,
     found_by: foundBy,
-    category: category,
+    category,
     image_url: publicUrl
   }]);
 
@@ -109,8 +109,44 @@ document.getElementById('postForm').addEventListener('submit', async (e) => {
 
   alert('Item posted successfully!');
   e.target.reset();
+  fetchItems();
 });
+
+// Fetch and display items
+const grid = document.getElementById('itemsGrid');
+async function fetchItems() {
+  const { data, error } = await supabase.from('lost_items').select('*').order('date_found', { ascending: false });
+  if (error) return alert('Failed to fetch items: ' + error.message);
+
+  grid.innerHTML = '';
+  data.forEach(item => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+      <img src="${item.image_url}" alt="${item.item_name}">
+      <div class="card-body">
+        <h4>${item.item_name}</h4>
+        <p>${item.category}</p>
+        <button class="deleteBtn">Delete</button>
+      </div>
+    `;
+    // Delete button
+    card.querySelector('.deleteBtn').addEventListener('click', async () => {
+      if (!confirm('Are you sure you want to delete this item?')) return;
+      // Remove from storage
+      const path = item.image_url.split('/').pop();
+      await supabase.storage.from('lost-item-images').remove([path]);
+      // Remove from DB
+      const { error } = await supabase.from('lost_items').delete().eq('id', item.id);
+      if (error) return alert('Delete failed: ' + error.message);
+      fetchItems();
+    });
+    grid.appendChild(card);
+  });
+}
+
+// Initial load
+fetchItems();
 </script>
 </body>
 </html>
-
