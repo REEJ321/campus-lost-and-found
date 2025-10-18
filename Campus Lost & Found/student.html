@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Lost & Found - Student View</title>
+<style>
+  body { font-family: Poppins, sans-serif; background: #f4f6f8; margin: 0; }
+  header { background: #2c3e50; color: #fff; padding: 1rem; display: flex; justify-content: space-between; align-items: center; }
+  .container { max-width: 1000px; margin: 30px auto; padding: 10px; }
+  .items-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
+  .card { background: #fff; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); overflow: hidden; cursor: pointer; transition: 0.2s; }
+  .card:hover { transform: translateY(-5px); }
+  .card img { width: 100%; height: 150px; object-fit: cover; }
+  .card-content { padding: 15px; }
+  .card-content h3 { margin: 0; color: #2c3e50; font-size: 1.2rem; }
+  .card-content p { margin: 5px 0; color: #555; font-size: 0.9rem; }
+  .card-content .date { color: #888; font-size: 0.8rem; margin-top: 5px; }
+  .card-content .found-by { font-size: 0.85rem; color: #444; margin-top: 3px; }
+  button { background: #3498db; border: none; padding: 8px 12px; color: #fff; border-radius: 5px; cursor: pointer; }
+  button:hover { background: #2980b9; }
+
+  /* Modal Styles */
+  .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); justify-content: center; align-items: center; }
+  .modal-content { background: #fff; max-width: 600px; width: 90%; border-radius: 10px; overflow: hidden; position: relative; padding-bottom: 20px; }
+  .modal img { width: 100%; height: 300px; object-fit: cover; }
+  .modal .details { padding: 20px; }
+  .modal .details h3 { margin: 0; font-size: 1.5rem; color: #2c3e50; }
+  .modal .details p { margin: 10px 0; font-size: 1rem; color: #555; }
+  .close-btn { position: absolute; top: 10px; right: 15px; font-size: 25px; color: #fff; cursor: pointer; }
+</style>
+</head>
+<body>
+<header>
+  <h2>Lost & Found Items</h2>
+  <button id="logoutBtn">Logout</button>
+</header>
+
+<div class="container">
+  <div id="itemsContainer" class="items-grid"></div>
+</div>
+
+<!-- Modal -->
+<div id="itemModal" class="modal">
+  <span class="close-btn" id="closeModal">&times;</span>
+  <div class="modal-content">
+    <img id="modalImage" src="" alt="">
+    <div class="details">
+      <h3 id="modalName"></h3>
+      <p id="modalDescription"></p>
+      <p><strong>Location:</strong> <span id="modalLocation"></span></p>
+      <p><strong>Date Found:</strong> <span id="modalDate"></span></p>
+      <p><strong>Found by:</strong> <span id="modalFoundBy"></span></p>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+const supabase = createClient(
+  "https://qypvwkxmtrfgnfhhcxia.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF5cHZ3a3htdHJmZ25maGhjeGlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA3ODcxNjAsImV4cCI6MjA3NjM2MzE2MH0.Mdam3ABGs8eF0682iSuv6UAOAF7BOIWTzhTaz-w5m2s"
+);
+
+// Logout
+document.getElementById("logoutBtn").addEventListener("click", async () => {
+  await supabase.auth.signOut();
+  location.href = "index.html";
+});
+
+// Load lost items
+async function loadItems() {
+  const container = document.getElementById("itemsContainer");
+  container.innerHTML = "<p>Loading lost items...</p>";
+
+  const { data, error } = await supabase
+    .from("lost_items")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    container.innerHTML = `<p style="color:red;">Error: ${error.message}</p>`;
+    return;
+  }
+
+  if (!data || data.length === 0) {
+    container.innerHTML = "<p>No lost items posted yet.</p>";
+    return;
+  }
+
+  container.innerHTML = "";
+  data.forEach(item => {
+    const card = document.createElement("div");
+    card.className = "card";
+    card.innerHTML = `
+      <img src="${item.image_url}" alt="${item.item_name}" />
+      <div class="card-content">
+        <h3>${item.item_name}</h3>
+        <p class="found-by"><strong>Found by:</strong> ${item.found_by}</p>
+      </div>
+    `;
+    container.appendChild(card);
+
+    // Click card to open modal
+    card.addEventListener("click", () => {
+      document.getElementById("modalImage").src = item.image_url;
+      document.getElementById("modalName").textContent = item.item_name;
+      document.getElementById("modalDescription").textContent = item.description;
+      document.getElementById("modalLocation").textContent = item.location;
+      document.getElementById("modalDate").textContent = new Date(item.date_found).toLocaleDateString();
+      document.getElementById("modalFoundBy").textContent = item.found_by;
+
+      document.getElementById("itemModal").style.display = "flex";
+    });
+  });
+}
+
+// Close modal
+document.getElementById("closeModal").addEventListener("click", () => {
+  document.getElementById("itemModal").style.display = "none";
+});
+
+// Close modal if clicked outside content
+window.addEventListener("click", (e) => {
+  if (e.target === document.getElementById("itemModal")) {
+    document.getElementById("itemModal").style.display = "none";
+  }
+});
+
+loadItems();
+</script>
+</body>
+</html>
