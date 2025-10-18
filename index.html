@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Login - Lost & Found</title>
+<title>Student Login - Lost & Found</title>
 <style>
 body { 
   font-family: Poppins, sans-serif; 
@@ -76,7 +76,7 @@ a:hover {
 </head>
 <body>
 <div class="container">
-  <h2>Login</h2>
+  <h2>Student Login</h2>
   <input type="email" id="email" placeholder="Email" required>
   
   <div class="password-container">
@@ -95,37 +95,23 @@ const supabase = createClient(
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF5cHZ3a3htdHJmZ25maGhjeGlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA3ODcxNjAsImV4cCI6MjA3NjM2MzE2MH0.Mdam3ABGs8eF0682iSuv6UAOAF7BOIWTzhTaz-w5m2s"
 );
 
-// Login with role check
+// Login
 document.getElementById("loginBtn").addEventListener("click", async () => {
   const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value;
 
   if (!email || !password) return alert("Please enter email and password");
 
-  // Sign in
-  const { data: loginData, error: loginError } = await supabase.auth.signInWithPassword({ email, password });
-  if (loginError) {
-    if (loginError.message.includes("not confirmed")) {
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+
+  if (error) {
+    if (error.message.includes("not confirmed")) {
       return alert("Your email is not confirmed. Please check your inbox.");
     }
-    return alert("Login failed: " + loginError.message);
+    return alert("Login failed: " + error.message);
   }
 
-  // Fetch role from user_profiles table
-  const { data: profile, error: profileError } = await supabase
-    .from("user_profiles")
-    .select("role")
-    .eq("id", loginData.user.id)
-    .single();
-
-  if (profileError) return alert("Failed to fetch user role: " + profileError.message);
-
-  // Redirect based on role
-  if (profile.role === "admin") {
-    location.href = "admin.html";
-  } else {
-    location.href = "student.html";
-  }
+  location.href = "student.html";
 });
 
 // Toggle password visibility
