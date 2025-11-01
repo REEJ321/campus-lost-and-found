@@ -1,371 +1,382 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Lost & Found - Admin Dashboard</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin - Lost & Found Dashboard</title>
 
-<style>
-  body {
-    font-family: Poppins, sans-serif;
-    background: url('https://i0.wp.com/metrocdodev.com/wp-content/uploads/2024/08/image-510.png?resize=1024%2C768&ssl=1') no-repeat center center fixed;
-    background-size: cover;
-    margin: 0;
-  }
+  <style>
+    /* ===== GLOBAL ===== */
+    body { 
+      font-family: Poppins, sans-serif; 
+      background: url('https://i0.wp.com/metrocdodev.com/wp-content/uploads/2024/08/image-510.png?resize=1024%2C768&ssl=1') 
+        no-repeat center center fixed; 
+      background-size: cover; 
+      margin: 0; 
+    }
 
-  body::before {
-    content: '';
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0,0,0,0.5);
-    z-index: -1;
-  }
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: -1;
+    }
 
-  header {
-    background: rgba(44,62,80,0.85);
-    color: #fff;
-    padding: 1rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
+    h2 { margin: 0; }
 
-  #logoutBtn, #postBtn {
-    background: #3498db;
-    border: none;
-    padding: 8px 12px;
-    color: #fff;
-    border-radius: 6px;
-    cursor: pointer;
-    margin-left: 10px;
-  }
+    label { 
+      display: block; 
+      margin-top: 10px; 
+      font-weight: 600; 
+    }
 
-  #logoutBtn:hover, #postBtn:hover {
-    background: #2980b9;
-  }
+    input, textarea, select { 
+      width: 100%; 
+      padding: 10px; 
+      margin-top: 5px; 
+      border-radius: 6px; 
+      border: 1px solid #ccc; 
+      box-sizing: border-box;
+    }
 
-  .container {
-    max-width: 1000px;
-    margin: 20px auto;
-    padding: 20px;
-    background: rgba(255,255,255,0.95);
-    border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-  }
+    button { 
+      background: #3498db; 
+      border: none; 
+      padding: 8px 12px; 
+      color: #fff; 
+      border-radius: 6px; 
+      cursor: pointer; 
+    }
 
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 20px;
-  }
+    button:hover { background: #2980b9; }
 
-  .card {
-    background: #fff;
-    border-radius: 10px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    overflow: hidden;
-    cursor: pointer;
-    transition: transform 0.2s;
-  }
+    /* ===== HEADER ===== */
+    header { 
+      background: rgba(44, 62, 80, 0.85); 
+      color: #fff; 
+      padding: 1rem; 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+    }
 
-  .card:hover {
-    transform: scale(1.03);
-  }
+    #logoutBtn { background: #e74c3c; }
+    #logoutBtn:hover { background: #c0392b; }
 
-  .card img {
-    width: 100%;
-    height: 160px;
-    object-fit: cover;
-  }
+    /* ===== CONTAINER ===== */
+    .container { 
+      max-width: 800px; 
+      margin: 20px auto; 
+      background: rgba(255,255,255,0.95); 
+      padding: 25px; 
+      border-radius: 10px; 
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2); 
+    }
 
-  .card-body {
-    padding: 10px;
-  }
+    #postbtn {
+      margin-top: 10px;
+    }
 
-  .card-body h4 {
-    margin: 0 0 5px 0;
-  }
+    /* ===== GRID / CARD ===== */
+    .grid { 
+      display: grid; 
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); 
+      gap: 20px; 
+      margin-top: 30px; 
+    }
 
-  #modal, #postModal {
-    display: none;
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: rgba(0,0,0,0.6);
-    justify-content: center;
-    align-items: center;
-    overflow-y: auto;
-    z-index: 1000;
-  }
+    .card { 
+      background: #fff; 
+      border-radius: 10px; 
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1); 
+      overflow: hidden; 
+      display: flex; 
+      flex-direction: column; 
+      cursor: pointer; 
+      transition: transform 0.2s;
+    }
 
-  .modal-content {
-    background: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    max-width: 500px;
-    width: 90%;
-    max-height: 90vh;
-    overflow-y: auto;
-    position: relative;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-  }
+    .card:hover { transform: scale(1.02); }
 
-  .modal-content img {
-    width: 100%;
-    max-height: 250px;
-    object-fit: cover;
-    border-radius: 6px;
-    margin-bottom: 10px;
-  }
+    .card img { 
+      width: 100%; 
+      height: 160px; 
+      object-fit: cover; 
+    }
 
-  #closeModal, #closePostModal {
-    position: absolute;
-    top: 10px;
-    right: 15px;
-    font-size: 1.5rem;
-    cursor: pointer;
-  }
+    .card-body { 
+      padding: 10px; 
+      flex: 1; 
+      display: flex; 
+      flex-direction: column; 
+    }
 
-  input, textarea, select {
-    width: 100%;
-    padding: 8px;
-    margin: 8px 0;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-  }
+    .card-body h4 { 
+      margin: 0 0 5px 0; 
+      font-size: 1rem; 
+    }
 
-  #submitPost {
-    background: #2ecc71;
-    border: none;
-    padding: 10px 12px;
-    color: #fff;
-    border-radius: 6px;
-    cursor: pointer;
-    width: 100%;
-  }
+    .card-body p { 
+      margin: 0; 
+      font-size: 0.85rem; 
+      color: #555; 
+    }
 
-  #submitPost:hover {
-    background: #27ae60;
-  }
+    .deleteBtn { 
+      margin-top: 10px; 
+      background: #e74c3c; 
+    }
 
-  .updateBtn {
-    background: #f39c12;
-    border: none;
-    padding: 8px 12px;
-    color: #fff;
-    border-radius: 6px;
-    cursor: pointer;
-    width: 100%;
-  }
+    .deleteBtn:hover { background: #c0392b; }
 
-  .updateBtn:hover {
-    background: #d68910;
-  }
-</style>
+    /* ===== MODAL ===== */
+    #modal { 
+      display: none; 
+      position: fixed; 
+      top: 0; left: 0; 
+      width: 100%; height: 100%; 
+      background: rgba(0,0,0,0.6); 
+      justify-content: center; 
+      align-items: center; 
+      overflow-y: auto; 
+      z-index: 1000; 
+    }
+
+    #modal-content { 
+      background: #fff; 
+      padding: 20px; 
+      border-radius: 10px; 
+      max-width: 500px; 
+      width: 90%; 
+      max-height: 90vh; 
+      overflow-y: auto; 
+      position: relative; 
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+    #saveChanges{
+      margin-top: 10px;
+    }
+    #closeModal { 
+      position: absolute; 
+      top: 10px; 
+      right: 15px; 
+      font-size: 1.5rem; 
+      cursor: pointer; 
+    }
+
+    body.modal-open {
+      overflow: hidden;
+    }
+  </style>
 </head>
+
 <body>
+  <header>
+    <h2>Admin Dashboard</h2>
+    <button id="logoutBtn">Logout</button>
+  </header>
 
-<header>
-  <h2>Admin Dashboard - Lost & Found</h2>
-  <div>
-    <button id="postBtn">Post Item</button>
-    <button id="logoutBtn" onclick="location.href='index.html'">Logout</button>
+  <div class="container">
+    <form id="postForm">
+      <label>Item Name</label>
+      <input type="text" id="name" required>
+
+      <label>Description</label>
+      <textarea id="description" rows="3" required></textarea>
+
+      <label>Location Found</label>
+      <input type="text" id="location" required>
+
+      <label>Date Found</label>
+      <input type="date" id="date" required>
+
+      <label>Found By (Student Name)</label>
+      <input type="text" id="found_by" required>
+
+      <label>Category</label>
+      <select id="category" required>
+        <option value="Electronics">Electronics</option>
+        <option value="Wallet">Wallet</option>
+        <option value="Keys">Keys</option>
+        <option value="Clothing">Clothing</option>
+        <option value="Books">Books</option>
+        <option value="Other">Other</option>
+      </select>
+
+      <label>Upload Image</label>
+      <input type="file" id="image" accept="image/*" required>
+
+      <button type="submit" id="postbtn">Post Item</button>
+    </form>
+
+    <div class="grid" id="itemsGrid"></div>
   </div>
-</header>
 
-<div class="container">
-  <div class="grid" id="itemsGrid"></div>
-</div>
+  <!-- ===== MODAL ===== -->
+  <div id="modal">
+    <div id="modal-content">
+      <span id="closeModal">&times;</span>
+      <img id="modalImage" src="" alt="" style="width:100%; border-radius:8px; margin-bottom:10px;">
 
-<div id="modal">
-  <div class="modal-content">
-    <span id="closeModal">&times;</span>
-    <img id="modalImage" src="" alt="">
-    <h3 id="modalName"></h3>
-    <p id="modalDescription"></p>
-    <p><strong>Location:</strong> <span id="modalLocation"></span></p>
-    <p><strong>Date Found:</strong> <span id="modalDate"></span></p>
-    <p><strong>Found By:</strong> <span id="modalFoundBy"></span></p>
-    <p><strong>Category:</strong> <span id="modalCategory"></span></p>
-    <button id="updateBtn" class="updateBtn">Update</button>
+      <label>Item Name</label>
+      <input type="text" id="modalName">
+
+      <label>Description</label>
+      <textarea id="modalDesc" rows="3"></textarea>
+
+      <label>Location</label>
+      <input type="text" id="modalLoc">
+
+      <label>Date Found</label>
+      <input type="date" id="modalDate">
+
+      <label>Found By</label>
+      <input type="text" id="modalFoundBy">
+
+      <label>Category</label>
+      <select id="modalCat">
+        <option value="Electronics">Electronics</option>
+        <option value="Wallet">Wallet</option>
+        <option value="Keys">Keys</option>
+        <option value="Clothing">Clothing</option>
+        <option value="Books">Books</option>
+        <option value="Other">Other</option>
+      </select>
+
+      <button id="saveChanges">Save Changes</button>
+    </div>
   </div>
-</div>
 
-<div id="postModal">
-  <div class="modal-content">
-    <span id="closePostModal">&times;</span>
-    <h3>Post New Item</h3>
-    <input type="text" id="itemName" placeholder="Item Name" required>
-    <textarea id="description" placeholder="Description" required></textarea>
-    <input type="text" id="location" placeholder="Location" required>
-    <select id="category" required>
-      <option value="">Select Category</option>
-      <option value="Electronics">Electronics</option>
-      <option value="Wallet">Wallet</option>
-      <option value="Keys">Keys</option>
-      <option value="Clothing">Clothing</option>
-      <option value="Books">Books</option>
-      <option value="Other">Other</option>
-    </select>
-    <input type="url" id="imageURL" placeholder="Image URL" required>
-    <button id="submitPost">Submit</button>
-  </div>
-</div>
+ <script type="module">
+    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
-    <script type="module">
-      import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+    const supabase = createClient(
+      'https://qypvwkxmtrfgnfhhcxia.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF5cHZ3a3htdHJmZ25maGhjeGlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA3ODcxNjAsImV4cCI6MjA3NjM2MzE2MH0.Mdam3ABGs8eF0682iSuv6UAOAF7BOIWTzhTaz-w5m2s'
+    );
 
-      const supabase = createClient(
-        "https://qypvwkxmtrfgnfhhcxia.supabase.co",
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF5cHZ3a3htdHJmZ25maGhjeGlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA3ODcxNjAsImV4cCI6MjA3NjM2MzE2MH0.Mdam3ABGs8eF0682iSuv6UAOAF7BOIWTzhTaz-w5m2s"
-      );
+    const grid = document.getElementById('itemsGrid');
+    const modal = document.getElementById('modal');
+    const closeModal = document.getElementById('closeModal');
+    const saveBtn = document.getElementById('saveChanges');
+    let currentItem = null;
 
-      const grid = document.getElementById("itemsGrid");
-      const modal = document.getElementById("modal");
-      const closeModal = document.getElementById("closeModal");
-      const saveBtn = document.getElementById("saveChanges");
-      let currentItem = null;
+    const eventBus = new EventTarget();
 
-      const eventBus = new EventTarget();
+    eventBus.addEventListener('item:added', fetchItems);
+    eventBus.addEventListener('item:deleted', fetchItems);
+    eventBus.addEventListener('item:updated', fetchItems);
 
-      eventBus.addEventListener("item:added", fetchItems);
-      eventBus.addEventListener("item:deleted", fetchItems);
-      eventBus.addEventListener("item:updated", fetchItems);
+    supabase.channel('lost_items')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'lost_items' }, () => fetchItems())
+      .subscribe();
 
-      supabase
-        .channel("lost_items")
-        .on(
-          "postgres_changes",
-          { event: "*", schema: "public", table: "lost_items" },
-          () => fetchItems()
-        )
-        .subscribe();
+    window.addEventListener('load', async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) location.href = 'index.html';
+      fetchItems();
+    });
 
-      window.addEventListener("load", async () => {
-        const {
-          data: { session },
-        } = await supabase.auth.getSession();
-        if (!session) location.href = "index.html";
-        fetchItems();
+    document.getElementById('logoutBtn').onclick = async () => {
+      await supabase.auth.signOut();
+      location.href = 'index.html';
+    };
+
+document.getElementById('postForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const image = document.getElementById('image').files[0];
+  if (!image) return alert('Please upload an image');
+
+  const fileName = `${Date.now()}-${image.name}`;
+  const { error: uploadError } = await supabase.storage.from('lost-item-images').upload(fileName, image);
+  if (uploadError) return alert('Upload failed: ' + uploadError.message);
+
+  const { data: { publicUrl } } = supabase.storage.from('lost-item-images').getPublicUrl(fileName);
+
+  const item = {
+    item_name: document.getElementById('name').value,
+    description: document.getElementById('description').value,
+    location: document.getElementById('location').value,
+    date_found: document.getElementById('date').value,
+    found_by: document.getElementById('found_by').value,
+    category: document.getElementById('category').value,
+    image_url: publicUrl
+  };
+
+  const { error } = await supabase.from('lost_items').insert([item]);
+  if (error) return alert('Insert failed: ' + error.message);
+
+  e.target.reset();
+  eventBus.dispatchEvent(new CustomEvent('item:added'));
+});
+
+
+    async function fetchItems() {
+      const { data, error } = await supabase.from('lost_items').select('*').order('date_found', { ascending: false });
+      if (error) return alert('Fetch failed: ' + error.message);
+
+      grid.innerHTML = '';
+      data.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+          <img src="${item.image_url}">
+          <div class="card-body">
+            <h4>${item.item_name}</h4>
+            <p>${item.category}</p>
+            <button class="deleteBtn">Delete</button>
+          </div>
+        `;
+        card.querySelector('.deleteBtn').addEventListener('click', (ev) => deleteItem(ev, item));
+        card.addEventListener('click', () => openModal(item));
+        grid.appendChild(card);
       });
+    }
 
-      document.getElementById("logoutBtn").onclick = async () => {
-        await supabase.auth.signOut();
-        location.href = "index.html";
+    async function deleteItem(ev, item) {
+      ev.stopPropagation();
+      if (!confirm('Delete this item?')) return;
+      const path = item.image_url.split('/').pop();
+      await supabase.storage.from('lost-item-images').remove([path]);
+      const { error } = await supabase.from('lost_items').delete().eq('id', item.id);
+      if (error) return alert('Delete failed: ' + error.message);
+      eventBus.dispatchEvent(new CustomEvent('item:deleted'));
+    }
+
+    function openModal(item) {
+      currentItem = item;
+      modal.style.display = 'flex';
+      document.body.classList.add('modal-open');
+      document.getElementById('modalImage').src = item.image_url;
+      document.getElementById('modalName').value = item.item_name;
+      document.getElementById('modalDesc').value = item.description;
+      document.getElementById('modalLoc').value = item.location;
+      document.getElementById('modalDate').value = item.date_found;
+      document.getElementById('modalFoundBy').value = item.found_by;
+      document.getElementById('modalCat').value = item.category;
+    }
+
+    closeModal.onclick = () => {
+      modal.style.display = 'none';
+      document.body.classList.remove('modal-open');
+    };
+
+    saveBtn.onclick = async () => {
+      if (!currentItem) return;
+      const updates = {
+        item_name: modalName.value,
+        description: modalDesc.value,
+        location: modalLoc.value,
+        date_found: modalDate.value,
+        found_by: modalFoundBy.value,
+        category: modalCat.value
       };
-
-      document
-        .getElementById("postForm")
-        .addEventListener("submit", async (e) => {
-          e.preventDefault();
-          const image = document.getElementById("image").files[0];
-          if (!image) return alert("Please upload an image");
-
-          const fileName = `${Date.now()}-${image.name}`;
-          const { error: uploadError } = await supabase.storage
-            .from("lost-item-images")
-            .upload(fileName, image);
-          if (uploadError)
-            return alert("Upload failed: " + uploadError.message);
-
-          const {
-            data: { publicUrl },
-          } = supabase.storage.from("lost-item-images").getPublicUrl(fileName);
-
-          const item = {
-            item_name: document.getElementById("name").value.trim(),
-            description: document.getElementById("description").value.trim(),
-            location: document.getElementById("location").value.trim(),
-            date_found: document.getElementById("date").value,
-            found_by: document.getElementById("found_by").value.trim(),
-            category: document.getElementById("category").value,
-            image_url: publicUrl,
-          };
-
-          const { error } = await supabase.from("lost_items").insert([item]);
-          if (error) return alert("Insert failed: " + error.message);
-
-          e.target.reset();
-          eventBus.dispatchEvent(new CustomEvent("item:added"));
-        });
-
-      async function fetchItems() {
-        const { data, error } = await supabase
-          .from("lost_items")
-          .select("*")
-          .order("date_found", { ascending: false });
-        if (error) return alert("Fetch failed: " + error.message);
-
-        grid.innerHTML = "";
-        data.forEach((item) => {
-          const card = document.createElement("div");
-          card.className = "card";
-          card.innerHTML = `
-            <img src="${item.image_url}" alt="${item.item_name}">
-            <div class="card-body">
-              <h4>${item.item_name}</h4>
-              <p>${item.category}</p>
-              <button class="deleteBtn">Delete</button>
-            </div>
-          `;
-          card
-            .querySelector(".deleteBtn")
-            .addEventListener("click", (ev) => deleteItem(ev, item));
-          card.addEventListener("click", () => openModal(item));
-          grid.appendChild(card);
-        });
-      }
-
-      async function deleteItem(ev, item) {
-        ev.stopPropagation();
-        if (!confirm("Delete this item?")) return;
-        const path = item.image_url.split("/").pop();
-        await supabase.storage.from("lost-item-images").remove([path]);
-        const { error } = await supabase
-          .from("lost_items")
-          .delete()
-          .eq("id", item.id);
-        if (error) return alert("Delete failed: " + error.message);
-        eventBus.dispatchEvent(new CustomEvent("item:deleted"));
-      }
-
-      function openModal(item) {
-        currentItem = item;
-        modal.style.display = "flex";
-        document.body.classList.add("modal-open");
-        document.getElementById("modalImage").src = item.image_url;
-        document.getElementById("modalName").value = item.item_name;
-        document.getElementById("modalDesc").value = item.description;
-        document.getElementById("modalLoc").value = item.location;
-        document.getElementById("modalDate").value = item.date_found;
-        document.getElementById("modalFoundBy").value = item.found_by;
-        document.getElementById("modalCat").value = item.category;
-      }
-
-      closeModal.onclick = () => {
-        modal.style.display = "none";
-        document.body.classList.remove("modal-open");
-      };
-
-      saveBtn.onclick = async () => {
-        if (!currentItem) return;
-        const updates = {
-          item_name: modalName.value,
-          description: modalDesc.value,
-          location: modalLoc.value,
-          date_found: modalDate.value,
-          found_by: modalFoundBy.value,
-          category: modalCat.value,
-        };
-        const { error } = await supabase
-          .from("lost_items")
-          .update(updates)
-          .eq("id", currentItem.id);
-        if (error) return alert("Update failed: " + error.message);
-        modal.style.display = "none";
-        eventBus.dispatchEvent(new CustomEvent("item:updated"));
-      };
-    </script>
-  </body>
+      const { error } = await supabase.from('lost_items').update(updates).eq('id', currentItem.id);
+      if (error) return alert('Update failed: ' + error.message);
+      modal.style.display = 'none';
+      eventBus.dispatchEvent(new CustomEvent('item:updated'));
+    };
+  </script>
+</body>
 </html>
-
