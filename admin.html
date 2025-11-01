@@ -277,13 +277,13 @@
             data: { publicUrl },
           } = supabase.storage.from("lost-item-images").getPublicUrl(fileName);
 
-          const item = {
-            item_name: name.value,
-            description: description.value,
-            location: location.value,
-            date_found: date.value,
-            found_by: found_by.value,
-            category: category.value,
+        const item = {
+            item_name: document.getElementById("name").value.trim(),
+            description: document.getElementById("description").value.trim(),
+            location: document.getElementById("location").value.trim(),
+            date_found: document.getElementById("date").value,
+            found_by: document.getElementById("found_by").value.trim(),
+            category: document.getElementById("category").value,
             image_url: publicUrl,
           };
           const { error } = await supabase.from("lost_items").insert([item]);
@@ -372,3 +372,4 @@
     </script>
   </body>
 </html>
+
