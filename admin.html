@@ -248,40 +248,46 @@
     </div>
   </div>
 
- <script type="module">
-    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+<!-- ... (keep rest of the HTML the same) ... -->
 
-    const supabase = createClient(
-      'https://qypvwkxmtrfgnfhhcxia.supabase.co',
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF5cHZ3a3htdHJmZ25maGhjeGlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA3ODcxNjAsImV4cCI6MjA3NjM2MzE2MH0.Mdam3ABGs8eF0682iSuv6UAOAF7BOIWTzhTaz-w5m2s'
-    );
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
-    const grid = document.getElementById('itemsGrid');
-    const modal = document.getElementById('modal');
-    const closeModal = document.getElementById('closeModal');
-    const saveBtn = document.getElementById('saveChanges');
-    let currentItem = null;
+const supabase = createClient(
+  'https://qypvwkxmtrfgnfhhcxia.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF5cHZ3a3htdHJmZ25maGhjeGlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA3ODcxNjAsImV4cCI6MjA3NjM2MzE2MH0.Mdam3ABGs8eF0682iSuv6UAOAF7B[...]'
+);
 
-    const eventBus = new EventTarget();
+const grid = document.getElementById('itemsGrid');
+const modal = document.getElementById('modal');
+const closeModal = document.getElementById('closeModal');
+const saveBtn = document.getElementById('saveChanges');
+let currentItem = null;
 
-    eventBus.addEventListener('item:added', fetchItems);
-    eventBus.addEventListener('item:deleted', fetchItems);
-    eventBus.addEventListener('item:updated', fetchItems);
+const eventBus = new EventTarget();
 
-    supabase.channel('lost_items')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'lost_items' }, () => fetchItems())
-      .subscribe();
+eventBus.addEventListener('item:added', fetchItems);
+eventBus.addEventListener('item:deleted', fetchItems);
+eventBus.addEventListener('item:updated', fetchItems);
+eventBus.addEventListener('page:loaded', fetchItems);     // NEW
+eventBus.addEventListener('db:changed', fetchItems);      // NEW
 
-    window.addEventListener('load', async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) location.href = 'index.html';
-      fetchItems();
-    });
+supabase.channel('lost_items')
+  .on('postgres_changes', { event: '*', schema: 'public', table: 'lost_items' }, () => {
+    eventBus.dispatchEvent(new CustomEvent('db:changed')); // CHANGED
+  })
+  .subscribe();
 
-    document.getElementById('logoutBtn').onclick = async () => {
-      await supabase.auth.signOut();
-      location.href = 'index.html';
-    };
+window.addEventListener('load', async () => {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) location.href = 'index.html';
+  eventBus.dispatchEvent(new CustomEvent('page:loaded'));   // CHANGED
+});
+
+document.getElementById('logoutBtn').onclick = async () => {
+  await supabase.auth.signOut();
+  location.href = 'index.html';
+};
 
 document.getElementById('postForm').addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -312,71 +318,72 @@ document.getElementById('postForm').addEventListener('submit', async (e) => {
 });
 
 
-    async function fetchItems() {
-      const { data, error } = await supabase.from('lost_items').select('*').order('date_found', { ascending: false });
-      if (error) return alert('Fetch failed: ' + error.message);
+async function fetchItems() {
+  const { data, error } = await supabase.from('lost_items').select('*').order('date_found', { ascending: false });
+  if (error) return alert('Fetch failed: ' + error.message);
 
-      grid.innerHTML = '';
-      data.forEach(item => {
-        const card = document.createElement('div');
-        card.className = 'card';
-        card.innerHTML = `
-          <img src="${item.image_url}">
-          <div class="card-body">
-            <h4>${item.item_name}</h4>
-            <p>${item.category}</p>
-            <button class="deleteBtn">Delete</button>
-          </div>
-        `;
-        card.querySelector('.deleteBtn').addEventListener('click', (ev) => deleteItem(ev, item));
-        card.addEventListener('click', () => openModal(item));
-        grid.appendChild(card);
-      });
-    }
+  grid.innerHTML = '';
+  data.forEach(item => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+      <img src="${item.image_url}">
+      <div class="card-body">
+        <h4>${item.item_name}</h4>
+        <p>${item.category}</p>
+        <button class="deleteBtn">Delete</button>
+      </div>
+    `;
+    card.querySelector('.deleteBtn').addEventListener('click', (ev) => deleteItem(ev, item));
+    card.addEventListener('click', () => openModal(item));
+    grid.appendChild(card);
+  });
+}
 
-    async function deleteItem(ev, item) {
-      ev.stopPropagation();
-      if (!confirm('Delete this item?')) return;
-      const path = item.image_url.split('/').pop();
-      await supabase.storage.from('lost-item-images').remove([path]);
-      const { error } = await supabase.from('lost_items').delete().eq('id', item.id);
-      if (error) return alert('Delete failed: ' + error.message);
-      eventBus.dispatchEvent(new CustomEvent('item:deleted'));
-    }
+async function deleteItem(ev, item) {
+  ev.stopPropagation();
+  if (!confirm('Delete this item?')) return;
+  const path = item.image_url.split('/').pop();
+  await supabase.storage.from('lost-item-images').remove([path]);
+  const { error } = await supabase.from('lost_items').delete().eq('id', item.id);
+  if (error) return alert('Delete failed: ' + error.message);
+  eventBus.dispatchEvent(new CustomEvent('item:deleted'));
+}
 
-    function openModal(item) {
-      currentItem = item;
-      modal.style.display = 'flex';
-      document.body.classList.add('modal-open');
-      document.getElementById('modalImage').src = item.image_url;
-      document.getElementById('modalName').value = item.item_name;
-      document.getElementById('modalDesc').value = item.description;
-      document.getElementById('modalLoc').value = item.location;
-      document.getElementById('modalDate').value = item.date_found;
-      document.getElementById('modalFoundBy').value = item.found_by;
-      document.getElementById('modalCat').value = item.category;
-    }
+function openModal(item) {
+  currentItem = item;
+  modal.style.display = 'flex';
+  document.body.classList.add('modal-open');
+  document.getElementById('modalImage').src = item.image_url;
+  document.getElementById('modalName').value = item.item_name;
+  document.getElementById('modalDesc').value = item.description;
+  document.getElementById('modalLoc').value = item.location;
+  document.getElementById('modalDate').value = item.date_found;
+  document.getElementById('modalFoundBy').value = item.found_by;
+  document.getElementById('modalCat').value = item.category;
+}
 
-    closeModal.onclick = () => {
-      modal.style.display = 'none';
-      document.body.classList.remove('modal-open');
-    };
+closeModal.onclick = () => {
+  modal.style.display = 'none';
+  document.body.classList.remove('modal-open');
+};
 
-    saveBtn.onclick = async () => {
-      if (!currentItem) return;
-      const updates = {
-        item_name: modalName.value,
-        description: modalDesc.value,
-        location: modalLoc.value,
-        date_found: modalDate.value,
-        found_by: modalFoundBy.value,
-        category: modalCat.value
-      };
-      const { error } = await supabase.from('lost_items').update(updates).eq('id', currentItem.id);
-      if (error) return alert('Update failed: ' + error.message);
-      modal.style.display = 'none';
-      eventBus.dispatchEvent(new CustomEvent('item:updated'));
-    };
-  </script>
+saveBtn.onclick = async () => {
+  if (!currentItem) return;
+  const updates = {
+    item_name: modalName.value,
+    description: modalDesc.value,
+    location: modalLoc.value,
+    date_found: modalDate.value,
+    found_by: modalFoundBy.value,
+    category: modalCat.value
+  };
+  const { error } = await supabase.from('lost_items').update(updates).eq('id', currentItem.id);
+  if (error) return alert('Update failed: ' + error.message);
+  modal.style.display = 'none';
+  eventBus.dispatchEvent(new CustomEvent('item:updated'));
+};
+</script>
 </body>
 </html>
+
