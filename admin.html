@@ -194,15 +194,17 @@
       <label>Found By (Student Name)</label>
       <input type="text" id="found_by" required>
 
-      <label>Category</label>
+      <label for="category">Category</label>
       <select id="category" required>
-        <option value="Electronics">Electronics</option>
-        <option value="Wallet">Wallet</option>
-        <option value="Keys">Keys</option>
-        <option value="Clothing">Clothing</option>
-        <option value="Books">Books</option>
-        <option value="Other">Other</option>
+      <option value="" disabled selected>Select Category</option>
+      <option value="Electronics">Electronics</option>
+      <option value="ID">ID</option>
+      <option value="School Supply">School Supply</option>
+      <option value="Personal Accessories">Personal Accessories</option>
+      <option value="Miscellaneous">Miscellaneous</option>
+      <option value="Other">Other</option>
       </select>
+
 
       <label>Upload Image</label>
       <input type="file" id="image" accept="image/*" required>
@@ -386,6 +388,7 @@ saveBtn.onclick = async () => {
 </script>
 </body>
 </html>
+
 
 
 
