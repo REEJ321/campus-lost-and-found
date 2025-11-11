@@ -362,6 +362,7 @@ function openModal(item) {
 
 saveBtn.onclick = async () => {
   if (!currentItem) return;
+
   const updates = {
     item_name: modalName.value,
     description: modalDesc.value,
@@ -370,14 +371,23 @@ saveBtn.onclick = async () => {
     found_by: modalFoundBy.value,
     category: document.getElementById('modalCat').value
   };
-  const { error } = await supabase.from('lost_items').update(updates).eq('id', currentItem.id);
+
+  const { error } = await supabase
+    .from('lost_items')
+    .update(updates)
+    .eq('id', currentItem.id);
+
   if (error) return alert('Update failed: ' + error.message);
+
   modal.style.display = 'none';
+  document.body.classList.remove('modal-open');  
   eventBus.dispatchEvent(new CustomEvent('item:updated'));
 };
+
 </script>
 </body>
 </html>
+
 
 
 
