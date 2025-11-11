@@ -6,8 +6,10 @@
   <title>Admin - Lost & Found Dashboard</title>
 
   <style>
+    
     /* ===== GLOBAL ===== */
     body { 
+        overflow: auto 
       font-family: Poppins, sans-serif; 
       background: url('https://i0.wp.com/metrocdodev.com/wp-content/uploads/2024/08/image-510.png?resize=1024%2C768&ssl=1') 
         no-repeat center center fixed; 
@@ -75,6 +77,8 @@
     }
     
 #dropZone {
+  position: static; /* Prevent it from blocking entire screen */
+  z-index: 1;
   border: 2px dashed #3498db;
   border-radius: 8px;
   padding: 20px;
@@ -96,6 +100,8 @@
   margin-top: 15px;
   display: none;
   justify-content: center;
+   max-height: 250px;
+  overflow: hidden;
 }
 
 #previewImage {
@@ -303,21 +309,21 @@
   </div>
 
  <script type="module">
-    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
-    const supabase = createClient(
-      'https://qypvwkxmtrfgnfhhcxia.supabase.co',
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF5cHZ3a3htdHJmZ25maGhjeGlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA3ODcxNjAsImV4cCI6MjA3NjM2MzE2MH0.Mdam3ABGs8eF0682iSuv6UAOAF7BOIWTzhTaz-w5m2s'
-    );
+const supabase = createClient(
+  'https://qypvwkxmtrfgnfhhcxia.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF5cHZ3a3htdHJmZ25maGhjeGlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA3ODcxNjAsImV4cCI6MjA3NjM2MzE2MH0.Mdam3ABGs8eF0682iSuv6UAOAF7BOIWTzhTaz-w5m2s'
+);
 
-// Drag & Drop with Preview
+// === DRAG & DROP UPLOAD ===
 const dropZone = document.getElementById("dropZone");
 const fileInput = document.getElementById("image");
 const previewImage = document.getElementById("previewImage");
 const previewContainer = document.getElementById("previewContainer");
 const removePreview = document.getElementById("removePreview");
 
-// Click to open file dialog
+// Click to upload
 dropZone.addEventListener("click", () => fileInput.click());
 
 // Drag over
@@ -331,7 +337,7 @@ dropZone.addEventListener("dragleave", () => {
   dropZone.classList.remove("dragover");
 });
 
-// Drop event
+// Drop file
 dropZone.addEventListener("drop", (e) => {
   e.preventDefault();
   dropZone.classList.remove("dragover");
@@ -344,7 +350,7 @@ dropZone.addEventListener("drop", (e) => {
   }
 });
 
-// Show preview when file selected
+// Show preview
 fileInput.addEventListener("change", () => {
   const file = fileInput.files[0];
   if (file) showPreview(file);
@@ -369,39 +375,39 @@ removePreview.addEventListener("click", (e) => {
   previewImage.src = "";
   previewContainer.style.display = "none";
   removePreview.style.display = "none";
-  dropZone.querySelector("p").textContent =
-    "Drag & Drop image here or click to upload";
+  dropZone.querySelector("p").textContent = "Drag & Drop image here or click to upload";
 });
 
 
-   
-    const grid = document.getElementById('itemsGrid');
-    const modal = document.getElementById('modal');
-    const closeModal = document.getElementById('closeModal');
-    const saveBtn = document.getElementById('saveChanges');
-    let currentItem = null;
+// === ADMIN DASHBOARD ===
+const grid = document.getElementById('itemsGrid');
+const modal = document.getElementById('modal');
+const closeModal = document.getElementById('closeModal');
+const saveBtn = document.getElementById('saveChanges');
+let currentItem = null;
 
-    const eventBus = new EventTarget();
+// Event-driven setup
+const eventBus = new EventTarget();
+eventBus.addEventListener('item:added', fetchItems);
+eventBus.addEventListener('item:deleted', fetchItems);
+eventBus.addEventListener('item:updated', fetchItems);
 
-    eventBus.addEventListener('item:added', fetchItems);
-    eventBus.addEventListener('item:deleted', fetchItems);
-    eventBus.addEventListener('item:updated', fetchItems);
+supabase.channel('lost_items')
+  .on('postgres_changes', { event: '*', schema: 'public', table: 'lost_items' }, () => fetchItems())
+  .subscribe();
 
-    supabase.channel('lost_items')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'lost_items' }, () => fetchItems())
-      .subscribe();
+window.addEventListener('load', async () => {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) location.href = 'index.html';
+  fetchItems();
+});
 
-    window.addEventListener('load', async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) location.href = 'index.html';
-      fetchItems();
-    });
+document.getElementById('logoutBtn').onclick = async () => {
+  await supabase.auth.signOut();
+  location.href = 'index.html';
+};
 
-    document.getElementById('logoutBtn').onclick = async () => {
-      await supabase.auth.signOut();
-      location.href = 'index.html';
-    };
-
+// === POST FORM ===
 document.getElementById('postForm').addEventListener('submit', async (e) => {
   e.preventDefault();
   const image = document.getElementById('image').files[0];
@@ -414,11 +420,11 @@ document.getElementById('postForm').addEventListener('submit', async (e) => {
   const { data: { publicUrl } } = supabase.storage.from('lost-item-images').getPublicUrl(fileName);
 
   const item = {
-    item_name: document.getElementById('name').value,
-    description: document.getElementById('description').value,
-    location: document.getElementById('location').value,
+    item_name: document.getElementById('name').value.trim(),
+    description: document.getElementById('description').value.trim(),
+    location: document.getElementById('location').value.trim(),
     date_found: document.getElementById('date').value,
-    found_by: document.getElementById('found_by').value,
+    found_by: document.getElementById('found_by').value.trim(),
     category: document.getElementById('category').value,
     image_url: publicUrl
   };
@@ -426,79 +432,94 @@ document.getElementById('postForm').addEventListener('submit', async (e) => {
   const { error } = await supabase.from('lost_items').insert([item]);
   if (error) return alert('Insert failed: ' + error.message);
 
+  // ✅ Reset form + scrolling fix
   e.target.reset();
+  previewContainer.style.display = "none";
+  removePreview.style.display = "none";
+  dropZone.querySelector("p").textContent = "Drag & Drop image here or click to upload";
+  document.body.style.overflow = "auto";
+  
+  alert("Post uploaded successfully!");
   eventBus.dispatchEvent(new CustomEvent('item:added'));
 });
 
 
-    async function fetchItems() {
-      const { data, error } = await supabase.from('lost_items').select('*').order('date_found', { ascending: false });
-      if (error) return alert('Fetch failed: ' + error.message);
+// === FETCH & DISPLAY ITEMS ===
+async function fetchItems() {
+  const { data, error } = await supabase.from('lost_items').select('*').order('date_found', { ascending: false });
+  if (error) return alert('Fetch failed: ' + error.message);
 
-      grid.innerHTML = '';
-      data.forEach(item => {
-        const card = document.createElement('div');
-        card.className = 'card';
-        card.innerHTML = `
-          <img src="${item.image_url}">
-          <div class="card-body">
-            <h4>${item.item_name}</h4>
-            <p>${item.category}</p>
-            <button class="deleteBtn">Delete</button>
-          </div>
-        `;
-        card.querySelector('.deleteBtn').addEventListener('click', (ev) => deleteItem(ev, item));
-        card.addEventListener('click', () => openModal(item));
-        grid.appendChild(card);
-      });
-    }
+  grid.innerHTML = '';
+  data.forEach(item => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+      <img src="${item.image_url}" alt="${item.item_name}">
+      <div class="card-body">
+        <h4>${item.item_name}</h4>
+        <p>${item.category}</p>
+        <button class="deleteBtn">Delete</button>
+      </div>
+    `;
+    card.querySelector('.deleteBtn').addEventListener('click', (ev) => deleteItem(ev, item));
+    card.addEventListener('click', () => openModal(item));
+    grid.appendChild(card);
+  });
+}
 
-    async function deleteItem(ev, item) {
-      ev.stopPropagation();
-      if (!confirm('Delete this item?')) return;
-      const path = item.image_url.split('/').pop();
-      await supabase.storage.from('lost-item-images').remove([path]);
-      const { error } = await supabase.from('lost_items').delete().eq('id', item.id);
-      if (error) return alert('Delete failed: ' + error.message);
-      eventBus.dispatchEvent(new CustomEvent('item:deleted'));
-    }
+// === DELETE ITEM ===
+async function deleteItem(ev, item) {
+  ev.stopPropagation();
+  if (!confirm('Delete this item?')) return;
+  const path = item.image_url.split('/').pop();
+  await supabase.storage.from('lost-item-images').remove([path]);
+  const { error } = await supabase.from('lost_items').delete().eq('id', item.id);
+  if (error) return alert('Delete failed: ' + error.message);
+  eventBus.dispatchEvent(new CustomEvent('item:deleted'));
+}
 
-    function openModal(item) {
-      currentItem = item;
-      modal.style.display = 'flex';
-      document.body.classList.add('modal-open');
-      document.getElementById('modalImage').src = item.image_url;
-      document.getElementById('modalName').value = item.item_name;
-      document.getElementById('modalDesc').value = item.description;
-      document.getElementById('modalLoc').value = item.location;
-      document.getElementById('modalDate').value = item.date_found;
-      document.getElementById('modalFoundBy').value = item.found_by;
-      document.getElementById('modalCat').value = item.category;
-    }
+// === MODAL HANDLING ===
+function openModal(item) {
+  currentItem = item;
+  modal.style.display = 'flex';
+  document.body.classList.add('modal-open');
+  document.getElementById('modalImage').src = item.image_url;
+  document.getElementById('modalName').value = item.item_name;
+  document.getElementById('modalDesc').value = item.description;
+  document.getElementById('modalLoc').value = item.location;
+  document.getElementById('modalDate').value = item.date_found;
+  document.getElementById('modalFoundBy').value = item.found_by;
+  document.getElementById('modalCat').value = item.category;
+}
 
-    closeModal.onclick = () => {
-      modal.style.display = 'none';
-      document.body.classList.remove('modal-open');
-    };
+closeModal.onclick = () => {
+  modal.style.display = 'none';
+  document.body.classList.remove('modal-open');
+  document.body.style.overflow = "auto";
+};
 
-    saveBtn.onclick = async () => {
-      if (!currentItem) return;
-      const updates = {
-        item_name: modalName.value,
-        description: modalDesc.value,
-        location: modalLoc.value,
-        date_found: modalDate.value,
-        found_by: modalFoundBy.value,
-        category: modalCat.value
-      };
-      const { error } = await supabase.from('lost_items').update(updates).eq('id', currentItem.id);
-      if (error) return alert('Update failed: ' + error.message);
-      modal.style.display = 'none';
-      eventBus.dispatchEvent(new CustomEvent('item:updated'));
-    };
-  </script>
+// === UPDATE ITEM ===
+saveBtn.onclick = async () => {
+  if (!currentItem) return;
+  const updates = {
+    item_name: modalName.value.trim(),
+    description: modalDesc.value.trim(),
+    location: modalLoc.value.trim(),
+    date_found: modalDate.value,
+    found_by: modalFoundBy.value.trim(),
+    category: modalCat.value
+  };
+  const { error } = await supabase.from('lost_items').update(updates).eq('id', currentItem.id);
+  if (error) return alert('Update failed: ' + error.message);
+  modal.style.display = 'none';
+  document.body.style.overflow = "auto";
+  eventBus.dispatchEvent(new CustomEvent('item:updated'));
+};
+</script>
+
 </body>
 </html>
+
 
 
 
