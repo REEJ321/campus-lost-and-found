@@ -1,325 +1,257 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lost & Found - Student View</title>
-  <style>
-    body {
-      font-family: Poppins, sans-serif;
-      background: url('https://i0.wp.com/metrocdodev.com/wp-content/uploads/2024/08/image-510.png?resize=1024%2C768&ssl=1') no-repeat center center fixed;
-      background-size: cover;
-      margin: 0;
-    }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lost & Found - Student View</title>
 
-    body::before {
-      content: '';
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-color: rgba(0, 0, 0, 0.5);
-      z-index: -1;
-    }
+    <style>
+      body {
+        font-family: Poppins, sans-serif;
+        background: url("https://i0.wp.com/metrocdodev.com/wp-content/uploads/2024/08/image-510.png?resize=1024%2C768&ssl=1")
+          no-repeat center center fixed;
+        background-size: cover;
+        margin: 0;
+      }
 
-    header {
-      background: rgba(44, 62, 80, 0.85);
-      color: #fff;
-      padding: 1rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
+      body::before {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: -1;
+      }
 
-    #loginBtn {
-      background: #3498db;
-      border: none;
-      padding: 8px 12px;
-      color: #fff;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: bold;
-    }
+      header {
+        background: rgba(44, 62, 80, 0.85);
+        color: #fff;
+        padding: 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
 
-    #loginBtn:hover {
-      background: #2980b9;
-    }
+      #loginBtn {
+        background: #3498db;
+        border: none;
+        padding: 8px 12px;
+        color: #fff;
+        border-radius: 6px;
+        cursor: pointer;
+      }
 
-    .container {
-      max-width: 1000px;
-      margin: 20px auto;
-      padding: 20px;
-      background: rgba(255, 255, 255, 0.95);
-      border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-    }
+      #loginBtn:hover {
+        background: #2980b9;
+      }
 
-    #categoryFilter {
-      width: 100%;
-      max-width: 250px;
-      padding: 8px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      margin-bottom: 20px;
-      font-family: Poppins, sans-serif;
-      cursor: pointer;
-    }
+      .container {
+        max-width: 1000px;
+        margin: 20px auto;
+        padding: 20px;
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      }
 
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 20px;
-    }
+      select {
+        padding: 8px;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        margin-bottom: 20px;
+      }
 
-    .card {
-      background: #fff;
-      border-radius: 10px;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-      cursor: pointer;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      transition: transform 0.2s;
-    }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 20px;
+      }
 
-    .card:hover {
-      transform: scale(1.03);
-    }
+      .card {
+        background: #fff;
+        border-radius: 10px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        cursor: pointer;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        transition: transform 0.2s;
+      }
 
-    .card img {
-      width: 100%;
-      height: 160px;
-      object-fit: cover;
-    }
+      .card:hover {
+        transform: scale(1.03);
+      }
 
-    .card-body {
-      padding: 10px;
-      flex: 1;
-    }
+      .card img {
+        width: 100%;
+        height: 160px;
+        object-fit: cover;
+      }
 
-    .card-body h4 {
-      margin: 0 0 5px;
-      font-size: 1rem;
-    }
+      .card-body {
+        padding: 10px;
+      }
 
-    .card-body p {
-      margin: 0;
-      font-size: 0.85rem;
-      color: #555;
-    }
+      .card-body h4 {
+        margin: 0 0 5px;
+        font-size: 1rem;
+      }
 
-    #modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.6);
-      justify-content: center;
-      align-items: center;
-      overflow-y: auto;
-      z-index: 1000;
-    }
+      .card-body p {
+        margin: 0;
+        font-size: 0.85rem;
+        color: #555;
+      }
 
-    #modal-content {
-      background: #fff;
-      padding: 20px;
-      border-radius: 10px;
-      max-width: 500px;
-      width: 90%;
-      max-height: 90vh;
-      overflow-y: auto;
-      position: relative;
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-    }
+      #modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.6);
+        justify-content: center;
+        align-items: center;
+        overflow-y: auto;
+        z-index: 1000;
+      }
 
-    #modalImage {
-      width: 100%;
-      border-radius: 8px;
-      margin-bottom: 15px;
-    }
+      #modal-content {
+        background: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        max-width: 500px;
+        width: 90%;
+        max-height: 90vh;
+        overflow-y: auto;
+        position: relative;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      }
 
-    #closeModal {
-      position: absolute;
-      top: 10px;
-      right: 15px;
-      font-size: 1.5rem;
-      cursor: pointer;
-      color: #333;
-    }
+      #modal-content img {
+        width: 100%;
+        max-height: 250px;
+        object-fit: cover;
+        border-radius: 6px;
+        margin-bottom: 10px;
+      }
 
-    #closeModal:hover {
-      color: #e74c3c;
-    }
+      #closeModal {
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        font-size: 1.5rem;
+        cursor: pointer;
+      }
+    </style>
+  </head>
 
-    #modal-content h3 {
-      margin: 0 0 10px 0;
-      color: #2c3e50;
-    }
+  <body>
+    <header>
+      <h2>Lost & Found - Public View</h2>
+      <button id="loginBtn">Login</button>
+    </header>
 
-    #modal-content p {
-      margin: 8px 0;
-      line-height: 1.6;
-      color: #555;
-    }
+    <div class="container">
+      <select id="categoryFilter">
+        <option value="">All Categories</option>
+        <option value="Electronics">Electronics</option>
+        <option value="Wallet">Wallet</option>
+        <option value="Keys">Keys</option>
+        <option value="Clothing">Clothing</option>
+        <option value="Books">Books</option>
+        <option value="Other">Other</option>
+      </select>
 
-    #modal-content strong {
-      color: #2c3e50;
-    }
-
-    .empty-state {
-      text-align: center;
-      padding: 40px 20px;
-      color: #777;
-    }
-
-    .empty-state p {
-      font-size: 1.1rem;
-      margin: 0;
-    }
-  </style>
-</head>
-
-<body>
-  <header>
-    <h2>Lost & Found - Public View</h2>
-    <button id="loginBtn">Login</button>
-  </header>
-
-  <div class="container">
-  <select id="categoryFilter">
-    <option value="">All Categories</option>
-    <option value="Electronics">Electronics</option>
-    <option value="ID">ID</option>
-    <option value="School Supply">School Supply</option>
-    <option value="Personal Accessories">Personal Accessories</option>
-    <option value="Miscellaneous">Miscellaneous</option>
-    <option value="Other">Other</option>
-  </select>
-</div>
-
-    <div class="grid" id="itemsGrid"></div>
-  </div>
-
-  <div id="modal">
-    <div id="modal-content">
-      <span id="closeModal">&times;</span>
-      <img id="modalImage" src="" alt="">
-      <h3 id="modalName"></h3>
-      <p id="modalDescription"></p>
-      <p><strong>Location:</strong> <span id="modalLocation"></span></p>
-      <p><strong>Date Found:</strong> <span id="modalDate"></span></p>
-      <p><strong>Found By:</strong> <span id="modalFoundBy"></span></p>
-      <p><strong>Category:</strong> <span id="modalCategory"></span></p>
+      <div class="grid" id="itemsGrid"></div>
     </div>
-  </div>
 
-  <script type="module">
-    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-    const supabase = createClient(
-      'https://qypvwkxmtrfgnfhhcxia.supabase.co',
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF5cHZ3a3htdHJmZ25maGhjeGlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA3ODcxNjAsImV4cCI6MjA3NjM2MzE2MH0.Mdam3ABGs8eF0682iSuv6UAOAF7BOIWTzhTaz-w5m2s'
-    );
+    <div id="modal">
+      <div id="modal-content">
+        <span id="closeModal">&times;</span>
+        <img id="modalImage" src="" alt="" />
+        <h3 id="modalName"></h3>
+        <p id="modalDescription"></p>
+        <p><strong>Location:</strong> <span id="modalLocation"></span></p>
+        <p><strong>Date Found:</strong> <span id="modalDate"></span></p>
+        <p><strong>Found By:</strong> <span id="modalFoundBy"></span></p>
+        <p><strong>Category:</strong> <span id="modalCategory"></span></p>
+      </div>
+    </div>
 
-    const elements = {
-      grid: document.getElementById('itemsGrid'),
-      filter: document.getElementById('categoryFilter'),
-      modal: document.getElementById('modal'),
-      closeModal: document.getElementById('closeModal'),
-      loginBtn: document.getElementById('loginBtn')
-    };
+    <script type="module">
+      import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-    function initEventListeners() {
-      elements.filter.addEventListener('change', fetchItems);
-      elements.closeModal.addEventListener('click', closeModalWindow);
-      elements.loginBtn.addEventListener('click', () => location.href = 'index.html');
-      
-      window.addEventListener('click', (e) => {
-        if (e.target === elements.modal) {
-          closeModalWindow();
-        }
+      const supabase = createClient(
+        "https://qypvwkxmtrfgnfhhcxia.supabase.co",
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF5cHZ3a3htdHJmZ25maGhjeGlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA3ODcxNjAsImV4cCI6MjA3NjM2MzE2MH0.Mdam3ABGs8eF0682iSuv6UAOAF7BOIWTzhTaz-w5m2s"
+      );
+
+      const grid = document.getElementById("itemsGrid");
+      const filter = document.getElementById("categoryFilter");
+      const modal = document.getElementById("modal");
+      const closeModal = document.getElementById("closeModal");
+
+      document.addEventListener("DOMContentLoaded", () => {
+        fetchItems();
+
+        filter.addEventListener("change", fetchItems);
+        closeModal.addEventListener("click", closeModalWindow);
+        window.addEventListener("click", (e) => {
+          if (e.target === modal) closeModalWindow();
+        });
+        document
+          .getElementById("loginBtn")
+          .addEventListener("click", () => (location.href = "index.html"));
       });
-    }
 
-    async function fetchItems() {
-      try {
-        let query = supabase
-          .from('lost_items')
-          .select('*')
-          .order('date_found', { ascending: false });
+      async function fetchItems() {
+        let query = supabase.from("lost_items").select("*");
+        if (filter.value) query = query.eq("category", filter.value);
 
-        if (elements.filter.value) {
-          query = query.eq('category', elements.filter.value);
-        }
-
-        const { data, error } = await query;
-        
-        if (error) throw error;
+        const { data, error } = await query.order("date_found", {
+          ascending: false,
+        });
+        if (error) return alert("Failed to fetch items: " + error.message);
 
         renderItems(data);
-      } catch (error) {
-        alert('Failed to fetch items: ' + error.message);
       }
-    }
 
-    function renderItems(items) {
-      elements.grid.innerHTML = '';
-
-      if (items.length === 0) {
-        elements.grid.innerHTML = `
-          <div class="empty-state">
-            <p>No items found in this category.</p>
+      function renderItems(items) {
+        grid.innerHTML = "";
+        items.forEach((item) => {
+          const card = document.createElement("div");
+          card.className = "card";
+          card.innerHTML = `
+          <img src="${item.image_url}" alt="${item.item_name}">
+          <div class="card-body">
+            <h4>${item.item_name}</h4>
+            <p>${item.category}</p>
           </div>
         `;
-        return;
+          card.addEventListener("click", () => openModal(item));
+          grid.appendChild(card);
+        });
       }
 
-      items.forEach(item => {
-        const card = createItemCard(item);
-        elements.grid.appendChild(card);
-      });
-    }
+      function openModal(item) {
+        modal.style.display = "flex";
+        document.getElementById("modalImage").src = item.image_url;
+        document.getElementById("modalName").textContent = item.item_name;
+        document.getElementById("modalDescription").textContent =
+          item.description;
+        document.getElementById("modalLocation").textContent = item.location;
+        document.getElementById("modalDate").textContent = item.date_found;
+        document.getElementById("modalFoundBy").textContent = item.found_by;
+        document.getElementById("modalCategory").textContent = item.category;
+      }
 
-    function createItemCard(item) {
-      const card = document.createElement('div');
-      card.className = 'card';
-      card.innerHTML = `
-        <img src="${item.image_url}" alt="${item.item_name}">
-        <div class="card-body">
-          <h4>${item.item_name}</h4>
-          <p>${item.category}</p>
-        </div>
-      `;
-      
-      card.addEventListener('click', () => openModal(item));
-      
-      return card;
-    }
-
-    function openModal(item) {
-      elements.modal.style.display = 'flex';
-      
-      document.getElementById('modalImage').src = item.image_url;
-      document.getElementById('modalName').textContent = item.item_name;
-      document.getElementById('modalDescription').textContent = item.description;
-      document.getElementById('modalLocation').textContent = item.location;
-      document.getElementById('modalDate').textContent = item.date_found;
-      document.getElementById('modalFoundBy').textContent = item.found_by;
-      document.getElementById('modalCategory').textContent = item.category;
-    }
-
-    function closeModalWindow() {
-      elements.modal.style.display = 'none';
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-      initEventListeners();
-      fetchItems();
-    });
-  </script>
-</body>
+      function closeModalWindow() {
+        modal.style.display = "none";
+      }
+    </script>
+  </body>
 </html>
-
-
