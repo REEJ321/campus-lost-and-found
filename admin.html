@@ -6,7 +6,6 @@
   <title>Admin - Lost & Found Dashboard</title>
 
   <style>
-    /* ===== GLOBAL ===== */
     body { 
       font-family: Poppins, sans-serif; 
       background: url('https://i0.wp.com/metrocdodev.com/wp-content/uploads/2024/08/image-510.png?resize=1024%2C768&ssl=1') 
@@ -51,7 +50,6 @@
 
     button:hover { background: #2980b9; }
 
-    /* ===== HEADER ===== */
     header { 
       background: rgba(44, 62, 80, 0.85); 
       color: #fff; 
@@ -64,7 +62,6 @@
     #logoutBtn { background: #e74c3c; }
     #logoutBtn:hover { background: #c0392b; }
 
-    /* ===== CONTAINER ===== */
     .container { 
       max-width: 800px; 
       margin: 20px auto; 
@@ -73,12 +70,15 @@
       border-radius: 10px; 
       box-shadow: 0 2px 8px rgba(0,0,0,0.2); 
     }
-
+    
+    .container h1{
+      text-align: center;
+    }
+    
     #postbtn {
       margin-top: 10px;
     }
 
-    /* ===== GRID / CARD ===== */
     .grid { 
       display: grid; 
       grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); 
@@ -130,7 +130,6 @@
 
     .deleteBtn:hover { background: #c0392b; }
 
-    /* ===== MODAL ===== */
     #modal { 
       display: none; 
       position: fixed; 
@@ -215,7 +214,6 @@
     <div class="grid" id="itemsGrid"></div>
   </div>
 
-  <!-- ===== MODAL ===== -->
   <div id="modal">
     <div id="modal-content">
       <span id="closeModal">&times;</span>
@@ -388,6 +386,7 @@ saveBtn.onclick = async () => {
 </script>
 </body>
 </html>
+
 
 
 
