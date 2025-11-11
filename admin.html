@@ -1,15 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin - Lost & Found Dashboard</title>
+
   <style>
-    /* ===== GLOBAL STYLES ===== */
+    /* ===== GLOBAL ===== */
     body { 
-      overflow: auto;
       font-family: Poppins, sans-serif; 
-      background: url('https://i0.wp.com/metrocdodev.com/wp-content/uploads/2024/08/image-510.png?resize=1024%2C768&ssl=1') no-repeat center center fixed; 
+      background: url('https://i0.wp.com/metrocdodev.com/wp-content/uploads/2024/08/image-510.png?resize=1024%2C768&ssl=1') 
+        no-repeat center center fixed; 
       background-size: cover; 
       margin: 0; 
     }
@@ -17,21 +18,12 @@
     body::before {
       content: '';
       position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
+      top: 0; left: 0; right: 0; bottom: 0;
       background-color: rgba(0, 0, 0, 0.5);
       z-index: -1;
     }
 
-    body.modal-open {
-      overflow: hidden;
-    }
-
-    h2 {
-      margin: 0;
-    }
+    h2 { margin: 0; }
 
     label { 
       display: block; 
@@ -39,9 +31,7 @@
       font-weight: 600; 
     }
 
-    input,
-    textarea,
-    select { 
+    input, textarea, select { 
       width: 100%; 
       padding: 10px; 
       margin-top: 5px; 
@@ -56,13 +46,10 @@
       padding: 8px 12px; 
       color: #fff; 
       border-radius: 6px; 
-      cursor: pointer;
-      font-weight: bold;
+      cursor: pointer; 
     }
 
-    button:hover {
-      background: #2980b9;
-    }
+    button:hover { background: #2980b9; }
 
     /* ===== HEADER ===== */
     header { 
@@ -74,78 +61,24 @@
       align-items: center; 
     }
 
-    #logoutBtn {
-      background: #e74c3c;
-    }
-
-    #logoutBtn:hover {
-      background: #c0392b;
-    }
+    #logoutBtn { background: #e74c3c; }
+    #logoutBtn:hover { background: #c0392b; }
 
     /* ===== CONTAINER ===== */
     .container { 
       max-width: 800px; 
       margin: 20px auto; 
-      background: rgba(255, 255, 255, 0.95); 
+      background: rgba(255,255,255,0.95); 
       padding: 25px; 
       border-radius: 10px; 
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2); 
-    }
-    
-    /* ===== DRAG & DROP ZONE ===== */
-    #dropZone {
-      position: relative;
-      z-index: 1;
-      border: 2px dashed #3498db;
-      border-radius: 8px;
-      padding: 20px;
-      text-align: center;
-      cursor: pointer;
-      color: #555;
-      background: #f9f9f9;
-      transition: background 0.3s, border-color 0.3s;
-    }
-
-    #dropZone.dragover {
-      background: #eaf6ff;
-      border-color: #2980b9;
-    }
-
-    #previewContainer {
-      position: relative;
-      margin-top: 15px;
-      display: none;
-      justify-content: center;
-      max-height: 250px;
-      overflow: hidden;
-    }
-
-    #previewImage {
-      width: 220px;
-      height: 220px;
-      object-fit: cover;
-      border-radius: 10px;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-    }
-
-    #removePreview {
-      position: absolute;
-      top: 5px;
-      right: calc(50% - 100px);
-      background: rgba(0, 0, 0, 0.7);
-      color: white;
-      border-radius: 50%;
-      font-size: 18px;
-      padding: 3px 8px;
-      cursor: pointer;
-      display: none;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2); 
     }
 
     #postbtn {
       margin-top: 10px;
     }
 
-    /* ===== GRID & CARDS ===== */
+    /* ===== GRID / CARD ===== */
     .grid { 
       display: grid; 
       grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); 
@@ -156,7 +89,7 @@
     .card { 
       background: #fff; 
       border-radius: 10px; 
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); 
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1); 
       overflow: hidden; 
       display: flex; 
       flex-direction: column; 
@@ -164,9 +97,7 @@
       transition: transform 0.2s;
     }
 
-    .card:hover {
-      transform: scale(1.02);
-    }
+    .card:hover { transform: scale(1.02); }
 
     .card img { 
       width: 100%; 
@@ -197,37 +128,35 @@
       background: #e74c3c; 
     }
 
-    .deleteBtn:hover {
-      background: #c0392b;
-    }
+    .deleteBtn:hover { background: #c0392b; }
 
     /* ===== MODAL ===== */
     #modal { 
       display: none; 
       position: fixed; 
-      top: 0; 
-      left: 0; 
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.6); 
-      justify-content: center;
+      top: 0; left: 0; 
+      width: 100%; height: 100%; 
+      background: rgba(0,0,0,0.6); 
+      justify-content: center; 
       align-items: center; 
       overflow-y: auto; 
       z-index: 1000; 
     }
-      
-    #modal-content {
-      background: #fff;
-      padding: 20px;
+
+    #modal-content { 
+      background: #fff; 
+      padding: 20px; 
       border-radius: 10px; 
       max-width: 500px; 
       width: 90%; 
       max-height: 90vh; 
       overflow-y: auto; 
       position: relative; 
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); 
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
     }
-
+    #saveChanges{
+      margin-top: 10px;
+    }
     #closeModal { 
       position: absolute; 
       top: 10px; 
@@ -236,54 +165,19 @@
       cursor: pointer; 
     }
 
-    #modalImage {
-      width: 100%;
-      border-radius: 8px;
-      margin-bottom: 10px;
-    }
-
-    .modal-buttons {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 10px;
-      gap: 10px;
-    }
-
-    .btn {
-      padding: 10px 15px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: bold;
-      flex: 1;
-    }
-
-    .btn.cancel {
-      background: #ccc;
-      color: #000;
-    }
-
-    .btn.save {
-      background: #007bff;
-      color: #fff;
-    }
-
-    .btn:hover {
-      opacity: 0.9;
+    body.modal-open {
+      overflow: hidden;
     }
   </style>
 </head>
 
 <body>
-  <!-- ===== HEADER ===== -->
   <header>
     <h2>Admin Dashboard</h2>
     <button id="logoutBtn">Logout</button>
   </header>
 
-  <!-- ===== MAIN CONTAINER ===== -->
   <div class="container">
-    <!-- Post Form -->
     <form id="postForm">
       <label>Item Name</label>
       <input type="text" id="name" required>
@@ -298,7 +192,7 @@
       <input type="date" id="date" required>
 
       <label>Found By (Student Name)</label>
-      <input type="text" id="foundBy" required>
+      <input type="text" id="found_by" required>
 
       <label>Category</label>
       <select id="category" required>
@@ -311,27 +205,19 @@
       </select>
 
       <label>Upload Image</label>
-      <div id="dropZone">
-        <p>Drag & Drop image here or click to upload</p>
-        <div id="previewContainer">
-          <img id="previewImage" alt="Preview">
-          <span id="removePreview">&times;</span>
-        </div>
-        <input type="file" id="imageInput" accept="image/*" required hidden>
-      </div>
+      <input type="file" id="image" accept="image/*" required>
 
       <button type="submit" id="postbtn">Post Item</button>
     </form>
 
-    <!-- Items Grid -->
     <div class="grid" id="itemsGrid"></div>
   </div>
 
-  <!-- ===== EDIT MODAL ===== -->
+  <!-- ===== MODAL ===== -->
   <div id="modal">
     <div id="modal-content">
       <span id="closeModal">&times;</span>
-      <img id="modalImage" src="" alt="">
+      <img id="modalImage" src="" alt="" style="width:100%; border-radius:8px; margin-bottom:10px;">
 
       <label>Item Name</label>
       <input type="text" id="modalName">
@@ -358,253 +244,110 @@
         <option value="Other">Other</option>
       </select>
 
-      <div class="modal-buttons">
-        <button id="cancelEdit" class="btn cancel">Cancel</button>
-        <button id="saveChanges" class="btn save">Save Changes</button>
-      </div>
+      <button id="saveChanges">Save Changes</button>
     </div>
   </div>
 
-  <script type="module">
+ <script type="module">
     import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
-    // ===== SUPABASE CONFIG =====
     const supabase = createClient(
       'https://qypvwkxmtrfgnfhhcxia.supabase.co',
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF5cHZ3a3htdHJmZ25maGhjeGlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA3ODcxNjAsImV4cCI6MjA3NjM2MzE2MH0.Mdam3ABGs8eF0682iSuv6UAOAF7BOIWTzhTaz-w5m2s'
     );
 
-    // ===== DOM ELEMENTS =====
-    const elements = {
-      dropZone: document.getElementById('dropZone'),
-      imageInput: document.getElementById('imageInput'),
-      previewImage: document.getElementById('previewImage'),
-      previewContainer: document.getElementById('previewContainer'),
-      removePreview: document.getElementById('removePreview'),
-      postForm: document.getElementById('postForm'),
-      itemsGrid: document.getElementById('itemsGrid'),
-      modal: document.getElementById('modal'),
-      closeModal: document.getElementById('closeModal'),
-      cancelEdit: document.getElementById('cancelEdit'),
-      saveChanges: document.getElementById('saveChanges'),
-      logoutBtn: document.getElementById('logoutBtn')
-    };
-
-    // ===== STATE =====
+    const grid = document.getElementById('itemsGrid');
+    const modal = document.getElementById('modal');
+    const closeModal = document.getElementById('closeModal');
+    const saveBtn = document.getElementById('saveChanges');
     let currentItem = null;
 
-    // ===== EVENT BUS =====
     const eventBus = new EventTarget();
+
     eventBus.addEventListener('item:added', fetchItems);
     eventBus.addEventListener('item:deleted', fetchItems);
     eventBus.addEventListener('item:updated', fetchItems);
 
-    // ===== REALTIME SUBSCRIPTION =====
     supabase.channel('lost_items')
-      .on('postgres_changes', { 
-        event: '*', 
-        schema: 'public', 
-        table: 'lost_items' 
-      }, () => fetchItems())
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'lost_items' }, () => fetchItems())
       .subscribe();
 
-    // ===== AUTH CHECK =====
     window.addEventListener('load', async () => {
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        location.href = 'index.html';
-        return;
-      }
+      if (!session) location.href = 'index.html';
       fetchItems();
     });
 
-    // ===== LOGOUT =====
-    elements.logoutBtn.onclick = async () => {
+    document.getElementById('logoutBtn').onclick = async () => {
       await supabase.auth.signOut();
       location.href = 'index.html';
     };
 
-    // ===== DRAG & DROP FUNCTIONALITY =====
-    function initDragAndDrop() {
-      elements.dropZone.addEventListener('click', () => elements.imageInput.click());
+document.getElementById('postForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const image = document.getElementById('image').files[0];
+  if (!image) return alert('Please upload an image');
 
-      elements.dropZone.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        elements.dropZone.classList.add('dragover');
-      });
+  const fileName = `${Date.now()}-${image.name}`;
+  const { error: uploadError } = await supabase.storage.from('lost-item-images').upload(fileName, image);
+  if (uploadError) return alert('Upload failed: ' + uploadError.message);
 
-      elements.dropZone.addEventListener('dragleave', () => {
-        elements.dropZone.classList.remove('dragover');
-      });
+  const { data: { publicUrl } } = supabase.storage.from('lost-item-images').getPublicUrl(fileName);
 
-      elements.dropZone.addEventListener('drop', (e) => {
-        e.preventDefault();
-        elements.dropZone.classList.remove('dragover');
-        
-        const file = e.dataTransfer.files[0];
-        if (file && file.type.startsWith('image/')) {
-          elements.imageInput.files = e.dataTransfer.files;
-          showPreview(file);
-        } else {
-          alert('Please drop a valid image file');
-        }
-      });
+  const item = {
+    item_name: document.getElementById('name').value,
+    description: document.getElementById('description').value,
+    location: document.getElementById('location').value,
+    date_found: document.getElementById('date').value,
+    found_by: document.getElementById('found_by').value,
+    category: document.getElementById('category').value,
+    image_url: publicUrl
+  };
 
-      elements.imageInput.addEventListener('change', () => {
-        const file = elements.imageInput.files[0];
-        if (file) showPreview(file);
-      });
+  const { error } = await supabase.from('lost_items').insert([item]);
+  if (error) return alert('Insert failed: ' + error.message);
 
-      elements.removePreview.addEventListener('click', (e) => {
-        e.stopPropagation();
-        resetImagePreview();
-      });
-    }
+  e.target.reset();
+  eventBus.dispatchEvent(new CustomEvent('item:added'));
+});
 
-    function showPreview(file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        elements.previewImage.src = e.target.result;
-        elements.previewContainer.style.display = 'flex';
-        elements.previewImage.style.display = 'block';
-        elements.removePreview.style.display = 'block';
-        elements.dropZone.querySelector('p').textContent = file.name;
-      };
-      reader.readAsDataURL(file);
-    }
 
-    function resetImagePreview() {
-      elements.imageInput.value = '';
-      elements.previewImage.src = '';
-      elements.previewContainer.style.display = 'none';
-      elements.removePreview.style.display = 'none';
-      elements.dropZone.querySelector('p').textContent = 'Drag & Drop image here or click to upload';
-    }
-
-    // ===== POST FORM SUBMISSION =====
-    elements.postForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      
-      const image = elements.imageInput.files[0];
-      if (!image) {
-        alert('Please upload an image');
-        return;
-      }
-
-      try {
-        // Upload image
-        const fileName = `${Date.now()}-${image.name}`;
-        const { error: uploadError } = await supabase.storage
-          .from('lost-item-images')
-          .upload(fileName, image);
-        
-        if (uploadError) throw uploadError;
-
-        // Get public URL
-        const { data: { publicUrl } } = supabase.storage
-          .from('lost-item-images')
-          .getPublicUrl(fileName);
-
-        // Insert item
-        const item = {
-          item_name: document.getElementById('name').value.trim(),
-          description: document.getElementById('description').value.trim(),
-          location: document.getElementById('location').value.trim(),
-          date_found: document.getElementById('date').value,
-          found_by: document.getElementById('foundBy').value.trim(),
-          category: document.getElementById('category').value,
-          image_url: publicUrl
-        };
-
-        const { error } = await supabase.from('lost_items').insert([item]);
-        if (error) throw error;
-
-        // Reset form
-        e.target.reset();
-        resetImagePreview();
-        document.body.style.overflow = 'auto';
-        
-        alert('Post uploaded successfully!');
-        eventBus.dispatchEvent(new CustomEvent('item:added'));
-      } catch (error) {
-        alert('Error: ' + error.message);
-      }
-    });
-
-    // ===== FETCH & DISPLAY ITEMS =====
     async function fetchItems() {
-      try {
-        const { data, error } = await supabase
-          .from('lost_items')
-          .select('*')
-          .order('date_found', { ascending: false });
-        
-        if (error) throw error;
+      const { data, error } = await supabase.from('lost_items').select('*').order('date_found', { ascending: false });
+      if (error) return alert('Fetch failed: ' + error.message);
 
-        displayItems(data);
-      } catch (error) {
-        alert('Fetch failed: ' + error.message);
-      }
-    }
-
-    function displayItems(items) {
-      elements.itemsGrid.innerHTML = '';
-      
-      items.forEach(item => {
-        const card = createItemCard(item);
-        elements.itemsGrid.appendChild(card);
+      grid.innerHTML = '';
+      data.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+          <img src="${item.image_url}">
+          <div class="card-body">
+            <h4>${item.item_name}</h4>
+            <p>${item.category}</p>
+            <button class="deleteBtn">Delete</button>
+          </div>
+        `;
+        card.querySelector('.deleteBtn').addEventListener('click', (ev) => deleteItem(ev, item));
+        card.addEventListener('click', () => openModal(item));
+        grid.appendChild(card);
       });
     }
 
-    function createItemCard(item) {
-      const card = document.createElement('div');
-      card.className = 'card';
-      card.innerHTML = `
-        <img src="${item.image_url}" alt="${item.item_name}">
-        <div class="card-body">
-          <h4>${item.item_name}</h4>
-          <p>${item.category}</p>
-          <button class="deleteBtn">Delete</button>
-        </div>
-      `;
-      
-      card.querySelector('.deleteBtn').addEventListener('click', (e) => deleteItem(e, item));
-      card.addEventListener('click', () => openModal(item));
-      
-      return card;
-    }
-
-    // ===== DELETE ITEM =====
-    async function deleteItem(e, item) {
-      e.stopPropagation();
-      
+    async function deleteItem(ev, item) {
+      ev.stopPropagation();
       if (!confirm('Delete this item?')) return;
-
-      try {
-        // Delete image from storage
-        const path = item.image_url.split('/').pop();
-        await supabase.storage.from('lost-item-images').remove([path]);
-
-        // Delete from database
-        const { error } = await supabase
-          .from('lost_items')
-          .delete()
-          .eq('id', item.id);
-        
-        if (error) throw error;
-
-        eventBus.dispatchEvent(new CustomEvent('item:deleted'));
-      } catch (error) {
-        alert('Delete failed: ' + error.message);
-      }
+      const path = item.image_url.split('/').pop();
+      await supabase.storage.from('lost-item-images').remove([path]);
+      const { error } = await supabase.from('lost_items').delete().eq('id', item.id);
+      if (error) return alert('Delete failed: ' + error.message);
+      eventBus.dispatchEvent(new CustomEvent('item:deleted'));
     }
 
-    // ===== MODAL FUNCTIONS =====
     function openModal(item) {
       currentItem = item;
-      elements.modal.style.display = 'flex';
+      modal.style.display = 'flex';
       document.body.classList.add('modal-open');
-      
       document.getElementById('modalImage').src = item.image_url;
       document.getElementById('modalName').value = item.item_name;
       document.getElementById('modalDesc').value = item.description;
@@ -614,45 +357,26 @@
       document.getElementById('modalCat').value = item.category;
     }
 
-    function closeModalHandler() {
-      elements.modal.style.display = 'none';
+    closeModal.onclick = () => {
+      modal.style.display = 'none';
       document.body.classList.remove('modal-open');
-      document.body.style.overflow = 'auto';
-    }
-
-    elements.closeModal.onclick = closeModalHandler;
-    elements.cancelEdit.onclick = closeModalHandler;
-
-    // ===== UPDATE ITEM =====
-    elements.saveChanges.onclick = async () => {
-      if (!currentItem) return;
-
-      try {
-        const updates = {
-          item_name: document.getElementById('modalName').value.trim(),
-          description: document.getElementById('modalDesc').value.trim(),
-          location: document.getElementById('modalLoc').value.trim(),
-          date_found: document.getElementById('modalDate').value,
-          found_by: document.getElementById('modalFoundBy').value.trim(),
-          category: document.getElementById('modalCat').value
-        };
-
-        const { error } = await supabase
-          .from('lost_items')
-          .update(updates)
-          .eq('id', currentItem.id);
-        
-        if (error) throw error;
-
-        closeModalHandler();
-        eventBus.dispatchEvent(new CustomEvent('item:updated'));
-      } catch (error) {
-        alert('Update failed: ' + error.message);
-      }
     };
 
-    // ===== INITIALIZE =====
-    initDragAndDrop();
+    saveBtn.onclick = async () => {
+      if (!currentItem) return;
+      const updates = {
+        item_name: modalName.value,
+        description: modalDesc.value,
+        location: modalLoc.value,
+        date_found: modalDate.value,
+        found_by: modalFoundBy.value,
+        category: modalCat.value
+      };
+      const { error } = await supabase.from('lost_items').update(updates).eq('id', currentItem.id);
+      if (error) return alert('Update failed: ' + error.message);
+      modal.style.display = 'none';
+      eventBus.dispatchEvent(new CustomEvent('item:updated'));
+    };
   </script>
 </body>
 </html>
