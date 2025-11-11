@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lost & Found - Student View</title>
   <style>
-    /* ===== GLOBAL STYLES ===== */
     body {
       font-family: Poppins, sans-serif;
       background: url('https://i0.wp.com/metrocdodev.com/wp-content/uploads/2024/08/image-510.png?resize=1024%2C768&ssl=1') no-repeat center center fixed;
@@ -24,7 +23,6 @@
       z-index: -1;
     }
 
-    /* ===== HEADER ===== */
     header {
       background: rgba(44, 62, 80, 0.85);
       color: #fff;
@@ -48,7 +46,6 @@
       background: #2980b9;
     }
 
-    /* ===== CONTAINER ===== */
     .container {
       max-width: 1000px;
       margin: 20px auto;
@@ -58,7 +55,6 @@
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
     }
 
-    /* ===== FILTER ===== */
     #categoryFilter {
       width: 100%;
       max-width: 250px;
@@ -70,7 +66,6 @@
       cursor: pointer;
     }
 
-    /* ===== GRID & CARDS ===== */
     .grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -114,7 +109,6 @@
       color: #555;
     }
 
-    /* ===== MODAL ===== */
     #modal {
       display: none;
       position: fixed;
@@ -175,7 +169,6 @@
       color: #2c3e50;
     }
 
-    /* ===== EMPTY STATE ===== */
     .empty-state {
       text-align: center;
       padding: 40px 20px;
@@ -190,28 +183,26 @@
 </head>
 
 <body>
-  <!-- ===== HEADER ===== -->
   <header>
     <h2>Lost & Found - Public View</h2>
     <button id="loginBtn">Login</button>
   </header>
 
-  <!-- ===== MAIN CONTAINER ===== -->
   <div class="container">
-    <select id="categoryFilter">
-      <option value="">All Categories</option>
-      <option value="Electronics">Electronics</option>
-      <option value="Wallet">Wallet</option>
-      <option value="Keys">Keys</option>
-      <option value="Clothing">Clothing</option>
-      <option value="Books">Books</option>
-      <option value="Other">Other</option>
-    </select>
+  <select id="categoryFilter">
+    <option value="">All Categories</option>
+    <option value="Electronics">Electronics</option>
+    <option value="ID">ID</option>
+    <option value="School Supply">School Supply</option>
+    <option value="Personal Accessories">Personal Accessories</option>
+    <option value="Miscellaneous">Miscellaneous</option>
+    <option value="Other">Other</option>
+  </select>
+</div>
 
     <div class="grid" id="itemsGrid"></div>
   </div>
 
-  <!-- ===== MODAL ===== -->
   <div id="modal">
     <div id="modal-content">
       <span id="closeModal">&times;</span>
@@ -330,4 +321,5 @@
   </script>
 </body>
 </html>
+
 
