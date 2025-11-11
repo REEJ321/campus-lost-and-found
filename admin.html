@@ -73,6 +73,7 @@
       border-radius: 10px; 
       box-shadow: 0 2px 8px rgba(0,0,0,0.2); 
     }
+    
     #dropZone {
       border: 2px dashed #3498db;
       border-radius: 8px;
@@ -83,9 +84,17 @@
       background: #f9f9f9;
       transition: background 0.3s, border-color 0.3s;
     }
+    
     #dropZone.dragover {
       background: #eaf6ff;
       border-color: #2980b9;
+    }
+    
+    #previewImage {
+      display: none;
+      margin-top: 10px;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     }
 
     #postbtn {
@@ -221,6 +230,7 @@
       <label>Upload Image</label>
       <div id="dropZone">
       <p>Drag & Drop image here or click to upload</p>
+      <img id="previewImage" style="max-width: 100%; margin-top: 10px; display: none; border-radius: 8px;" />
       <input type="file" id="image" accept="image/*" required hidden />
       </div>
 
@@ -273,20 +283,21 @@
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF5cHZ3a3htdHJmZ25maGhjeGlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA3ODcxNjAsImV4cCI6MjA3NjM2MzE2MH0.Mdam3ABGs8eF0682iSuv6UAOAF7BOIWTzhTaz-w5m2s'
     );
 
-   // Drag & Drop Upload
+// Drag & Drop with Preview
     const dropZone = document.getElementById("dropZone");
     const fileInput = document.getElementById("image");
+    const previewImage = document.getElementById("previewImage");
 
     dropZone.addEventListener("click", () => fileInput.click());
 
     dropZone.addEventListener("dragover", (e) => {
       e.preventDefault();
       dropZone.classList.add("dragover");
-});
+    });
 
     dropZone.addEventListener("dragleave", () => {
       dropZone.classList.remove("dragover");
-});
+    });
 
     dropZone.addEventListener("drop", (e) => {
       e.preventDefault();
@@ -294,16 +305,27 @@
       const file = e.dataTransfer.files[0];
       if (file && file.type.startsWith("image/")) {
         fileInput.files = e.dataTransfer.files;
-        dropZone.querySelector("p").textContent = `Selected: ${file.name}`;
-  } else {
-    alert("Please drop a valid image file");
-  }
-});
+        showPreview(file);
+      } else {
+         alert("Please drop a valid image file");
+      }
+    });
 
     fileInput.addEventListener("change", () => {
       const file = fileInput.files[0];
-      if (file) dropZone.querySelector("p").textContent = `Selected: ${file.name}`;
+      if (file) showPreview(file);
 });
+
+    function showPreview(file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        previewImage.src = e.target.result;
+        previewImage.style.display = "block";
+        dropZone.querySelector("p").textContent = `Selected: ${file.name}`;
+    };
+      reader.readAsDataURL(file);
+}
+
    
     const grid = document.getElementById('itemsGrid');
     const modal = document.getElementById('modal');
@@ -429,5 +451,6 @@ document.getElementById('postForm').addEventListener('submit', async (e) => {
   </script>
 </body>
 </html>
+
 
 
