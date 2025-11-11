@@ -357,7 +357,7 @@ function openModal(item) {
   document.getElementById('modalLoc').value = item.location;
   document.getElementById('modalDate').value = item.date_found;
   document.getElementById('modalFoundBy').value = item.found_by;
-  document.getElementById('modalCat').value = item.category; // ✅ fixed
+  document.getElementById('modalCat').value = item.category;
 }
 
 saveBtn.onclick = async () => {
@@ -368,7 +368,7 @@ saveBtn.onclick = async () => {
     location: modalLoc.value,
     date_found: modalDate.value,
     found_by: modalFoundBy.value,
-    category: document.getElementById('modalCat').value // ✅ fixed
+    category: document.getElementById('modalCat').value
   };
   const { error } = await supabase.from('lost_items').update(updates).eq('id', currentItem.id);
   if (error) return alert('Update failed: ' + error.message);
@@ -378,6 +378,7 @@ saveBtn.onclick = async () => {
 </script>
 </body>
 </html>
+
 
 
 
