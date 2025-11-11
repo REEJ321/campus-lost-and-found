@@ -196,15 +196,39 @@
     z-index: 1000;
     }
     
-   #modal-content {
-    background: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    max-width: 500px;
-    width: 90%;
-    margin-bottom: 40px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-    }
+  #modal-content {
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 500px;
+  width: 90%;
+  position: relative;
+  overflow-y: auto;
+  max-height: 90vh;
+}
+
+.btn {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.btn.cancel {
+  background: #ccc;
+  color: #000;
+}
+
+.btn.save {
+  background: #007bff;
+  color: #fff;
+}
+
+.btn:hover {
+  opacity: 0.9;
+}
+
 
     #saveChanges{
       margin-top: 10px;
@@ -304,7 +328,10 @@
         <option value="Other">Other</option>
       </select>
 
-      <button id="saveChanges">Save Changes</button>
+       <div style="display:flex; justify-content:space-between; margin-top:10px;">
+      <button id="cancelEdit" class="btn cancel">Cancel</button>
+      <button id="saveChanges" class="btn save">Save Changes</button>
+    </div>
     </div>
   </div>
 
@@ -497,6 +524,12 @@ closeModal.onclick = () => {
   document.body.classList.remove('modal-open');
   document.body.style.overflow = "auto";
 };
+   
+document.getElementById('cancelEdit').onclick = () => {
+  modal.style.display = 'none';
+  document.body.classList.remove('modal-open');
+  document.body.style.overflow = "auto";
+};
 
 // === UPDATE ITEM ===
 saveBtn.onclick = async () => {
@@ -519,6 +552,7 @@ saveBtn.onclick = async () => {
 
 </body>
 </html>
+
 
 
 
