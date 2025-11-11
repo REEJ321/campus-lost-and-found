@@ -73,6 +73,20 @@
       border-radius: 10px; 
       box-shadow: 0 2px 8px rgba(0,0,0,0.2); 
     }
+    #dropZone {
+      border: 2px dashed #3498db;
+      border-radius: 8px;
+      padding: 20px;
+      text-align: center;
+      cursor: pointer;
+      color: #555;
+      background: #f9f9f9;
+      transition: background 0.3s, border-color 0.3s;
+    }
+    #dropZone.dragover {
+      background: #eaf6ff;
+      border-color: #2980b9;
+    }
 
     #postbtn {
       margin-top: 10px;
@@ -205,7 +219,10 @@
       </select>
 
       <label>Upload Image</label>
-      <input type="file" id="image" accept="image/*" required>
+      <div id="dropZone">
+      <p>Drag & Drop image here or click to upload</p>
+      <input type="file" id="image" accept="image/*" required hidden />
+      </div>
 
       <button type="submit" id="postbtn">Post Item</button>
     </form>
@@ -256,6 +273,38 @@
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF5cHZ3a3htdHJmZ25maGhjeGlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA3ODcxNjAsImV4cCI6MjA3NjM2MzE2MH0.Mdam3ABGs8eF0682iSuv6UAOAF7BOIWTzhTaz-w5m2s'
     );
 
+   // Drag & Drop Upload
+    const dropZone = document.getElementById("dropZone");
+    const fileInput = document.getElementById("image");
+
+    dropZone.addEventListener("click", () => fileInput.click());
+
+    dropZone.addEventListener("dragover", (e) => {
+      e.preventDefault();
+      dropZone.classList.add("dragover");
+});
+
+    dropZone.addEventListener("dragleave", () => {
+      dropZone.classList.remove("dragover");
+});
+
+    dropZone.addEventListener("drop", (e) => {
+      e.preventDefault();
+      dropZone.classList.remove("dragover");
+      const file = e.dataTransfer.files[0];
+      if (file && file.type.startsWith("image/")) {
+        fileInput.files = e.dataTransfer.files;
+        dropZone.querySelector("p").textContent = `Selected: ${file.name}`;
+  } else {
+    alert("Please drop a valid image file");
+  }
+});
+
+    fileInput.addEventListener("change", () => {
+      const file = fileInput.files[0];
+      if (file) dropZone.querySelector("p").textContent = `Selected: ${file.name}`;
+});
+   
     const grid = document.getElementById('itemsGrid');
     const modal = document.getElementById('modal');
     const closeModal = document.getElementById('closeModal');
@@ -380,4 +429,5 @@ document.getElementById('postForm').addEventListener('submit', async (e) => {
   </script>
 </body>
 </html>
+
 
