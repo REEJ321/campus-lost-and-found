@@ -234,15 +234,17 @@
       <label>Found By</label>
       <input type="text" id="modalFoundBy">
 
-      <label>Category</label>
-      <select id="modalCat">
-        <option value="Electronics">Electronics</option>
-        <option value="Wallet">Wallet</option>
-        <option value="Keys">Keys</option>
-        <option value="Clothing">Clothing</option>
-        <option value="Books">Books</option>
-        <option value="Other">Other</option>
+      <label for="category">Category</label>
+      <select id="category" required>
+      <option value="" disabled selected>Select Category</option>
+      <option value="Electronics">Electronics</option>
+      <option value="ID">ID</option>
+      <option value="School Supply">School Supply</option>
+      <option value="Personal Accessories">Personal Accessories</option>
+      <option value="Miscellaneous">Miscellaneous</option>
+      <option value="Other">Other</option>
       </select>
+
 
       <button id="saveChanges">Save Changes</button>
     </div>
@@ -384,6 +386,7 @@ saveBtn.onclick = async () => {
 </script>
 </body>
 </html>
+
 
 
 
