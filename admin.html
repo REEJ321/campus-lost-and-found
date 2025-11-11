@@ -230,16 +230,17 @@
       <label>Found By</label>
       <input type="text" id="modalFoundBy">
 
-      <label for="category">Category</label>
-      <select id="category" required>
-      <option value="" disabled selected>Select Category</option>
-      <option value="Electronics">Electronics</option>
-      <option value="ID">ID</option>
-      <option value="School Supply">School Supply</option>
-      <option value="Personal Accessories">Personal Accessories</option>
-      <option value="Miscellaneous">Miscellaneous</option>
-      <option value="Other">Other</option>
-      </select>
+     <label for="category">Category</label>
+    <select id="modalCat" required>
+    <option value="" disabled selected>Select Category</option>
+    <option value="Electronics">Electronics</option>
+    <option value="ID">ID</option>
+    <option value="School Supply">School Supply</option>
+    <option value="Personal Accessories">Personal Accessories</option>
+    <option value="Miscellaneous">Miscellaneous</option>
+    <option value="Other">Other</option>
+    </select>
+
 
 
       <button id="saveChanges">Save Changes</button>
@@ -356,13 +357,8 @@ function openModal(item) {
   document.getElementById('modalLoc').value = item.location;
   document.getElementById('modalDate').value = item.date_found;
   document.getElementById('modalFoundBy').value = item.found_by;
-  document.getElementById('modalCat').value = item.category;
+  document.getElementById('modalCat').value = item.category; // ✅ fixed
 }
-
-closeModal.onclick = () => {
-  modal.style.display = 'none';
-  document.body.classList.remove('modal-open');
-};
 
 saveBtn.onclick = async () => {
   if (!currentItem) return;
@@ -372,7 +368,7 @@ saveBtn.onclick = async () => {
     location: modalLoc.value,
     date_found: modalDate.value,
     found_by: modalFoundBy.value,
-    category: modalCat.value
+    category: document.getElementById('modalCat').value // ✅ fixed
   };
   const { error } = await supabase.from('lost_items').update(updates).eq('id', currentItem.id);
   if (error) return alert('Update failed: ' + error.message);
@@ -382,6 +378,7 @@ saveBtn.onclick = async () => {
 </script>
 </body>
 </html>
+
 
 
 
