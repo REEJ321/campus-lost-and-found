@@ -227,14 +227,11 @@
 
   <script type="module">
     import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-
-    // ===== SUPABASE CONFIG =====
     const supabase = createClient(
       'https://qypvwkxmtrfgnfhhcxia.supabase.co',
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF5cHZ3a3htdHJmZ25maGhjeGlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA3ODcxNjAsImV4cCI6MjA3NjM2MzE2MH0.Mdam3ABGs8eF0682iSuv6UAOAF7BOIWTzhTaz-w5m2s'
     );
 
-    // ===== DOM ELEMENTS =====
     const elements = {
       grid: document.getElementById('itemsGrid'),
       filter: document.getElementById('categoryFilter'),
@@ -243,13 +240,11 @@
       loginBtn: document.getElementById('loginBtn')
     };
 
-    // ===== EVENT LISTENERS =====
     function initEventListeners() {
       elements.filter.addEventListener('change', fetchItems);
       elements.closeModal.addEventListener('click', closeModalWindow);
       elements.loginBtn.addEventListener('click', () => location.href = 'index.html');
       
-      // Close modal when clicking outside
       window.addEventListener('click', (e) => {
         if (e.target === elements.modal) {
           closeModalWindow();
@@ -257,7 +252,6 @@
       });
     }
 
-    // ===== FETCH ITEMS =====
     async function fetchItems() {
       try {
         let query = supabase
@@ -265,7 +259,6 @@
           .select('*')
           .order('date_found', { ascending: false });
 
-        // Apply category filter if selected
         if (elements.filter.value) {
           query = query.eq('category', elements.filter.value);
         }
@@ -280,7 +273,6 @@
       }
     }
 
-    // ===== RENDER ITEMS =====
     function renderItems(items) {
       elements.grid.innerHTML = '';
 
@@ -315,7 +307,6 @@
       return card;
     }
 
-    // ===== MODAL FUNCTIONS =====
     function openModal(item) {
       elements.modal.style.display = 'flex';
       
@@ -332,7 +323,6 @@
       elements.modal.style.display = 'none';
     }
 
-    // ===== INITIALIZE =====
     document.addEventListener('DOMContentLoaded', () => {
       initEventListeners();
       fetchItems();
@@ -340,3 +330,4 @@
   </script>
 </body>
 </html>
+
