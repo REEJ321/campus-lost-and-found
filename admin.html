@@ -359,6 +359,11 @@ function openModal(item) {
   document.getElementById('modalFoundBy').value = item.found_by;
   document.getElementById('modalCat').value = item.category;
 }
+  
+closeModal.onclick = () => {
+  modal.style.display = 'none';
+  document.body.classList.remove('modal-open');
+};
 
 saveBtn.onclick = async () => {
   if (!currentItem) return;
@@ -387,6 +392,7 @@ saveBtn.onclick = async () => {
 </script>
 </body>
 </html>
+
 
 
 
