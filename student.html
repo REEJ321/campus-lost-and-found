@@ -59,7 +59,14 @@
       .container h1{
         text-align: center;
       }
-      
+      .status.claimed {
+     color: green;
+     font-weight: bold;
+    }
+    .status.unclaimed {
+  color: red;
+  font-weight: bold;
+}
       select {
         padding: 8px;
         border-radius: 6px;
@@ -156,8 +163,6 @@
       <h2>Lost & Found - Public View</h2>
       <button id="loginBtn">Login</button>
     </header>
-
-    
     <div class="container">
       <h1>Claim at the office</h1>
       <select id="categoryFilter">
@@ -185,80 +190,82 @@
       </div>
     </div>
 
-    <script type="module">
-      import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+<script type="module">
+  import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-      const supabase = createClient(
-        "https://qypvwkxmtrfgnfhhcxia.supabase.co",
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF5cHZ3a3htdHJmZ25maGhjeGlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA3ODcxNjAsImV4cCI6MjA3NjM2MzE2MH0.Mdam3ABGs8eF0682iSuv6UAOAF7BOIWTzhTaz-w5m2s"
-      );
+  const supabase = createClient(
+    "https://qypvwkxmtrfgnfhhcxia.supabase.co",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF5cHZ3a3htdHJmZ25maGhjeGlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA3ODcxNjAsImV4cCI6MjA3NjM2MzE2MH0.Mdam3ABGs8eF0682iSuv6UAOAF7BOIWTzhTaz-w5m2s"
+  );
 
-      const grid = document.getElementById("itemsGrid");
-      const filter = document.getElementById("categoryFilter");
-      const modal = document.getElementById("modal");
-      const closeModal = document.getElementById("closeModal");
+  const grid = document.getElementById("itemsGrid");
+  const filter = document.getElementById("categoryFilter");
+  const modal = document.getElementById("modal");
+  const closeModal = document.getElementById("closeModal");
 
-      document.addEventListener("DOMContentLoaded", () => {
-        fetchItems();
+  document.addEventListener("DOMContentLoaded", () => {
+    fetchItems();
 
-        filter.addEventListener("change", fetchItems);
-        closeModal.addEventListener("click", closeModalWindow);
-        window.addEventListener("click", (e) => {
-          if (e.target === modal) closeModalWindow();
-        });
-        document
-          .getElementById("loginBtn")
-          .addEventListener("click", () => (location.href = "index.html"));
-      });
+    filter.addEventListener("change", fetchItems);
+    closeModal.addEventListener("click", closeModalWindow);
+    window.addEventListener("click", (e) => {
+      if (e.target === modal) closeModalWindow();
+    });
+    document
+      .getElementById("loginBtn")
+      .addEventListener("click", () => (location.href = "index.html"));
+  });
 
-      async function fetchItems() {
-        let query = supabase.from("lost_items").select("*");
-        if (filter.value) query = query.eq("category", filter.value);
+  async function fetchItems() {
+    let query = supabase.from("lost_items").select("*");
+    if (filter.value) query = query.eq("category", filter.value);
 
-        const { data, error } = await query.order("date_found", {
-          ascending: false,
-        });
-        if (error) return alert("Failed to fetch items: " + error.message);
+    const { data, error } = await query.order("date_found", {
+      ascending: false,
+    });
+    if (error) return alert("Failed to fetch items: " + error.message);
 
-        renderItems(data);
-      }
+    renderItems(data);
+  }
 
-      function renderItems(items) {
-        grid.innerHTML = "";
-        items.forEach((item) => {
-          const card = document.createElement("div");
-          card.className = "card";
-          card.innerHTML = `
-          <img src="${item.image_url}" alt="${item.item_name}">
-          <div class="card-body">
-            <h4>${item.item_name}</h4>
-            <p>${item.category}</p>
-          </div>
-        `;
-          card.addEventListener("click", () => openModal(item));
-          grid.appendChild(card);
-        });
-      }
+  function renderItems(items) {
+    grid.innerHTML = "";
+    items.forEach((item) => {
+      const card = document.createElement("div");
+      card.className = "card";
+      card.innerHTML = `
+        <img src="${item.image_url}" alt="${item.item_name}">
+        <div class="card-body">
+          <h4>${item.item_name}</h4>
+          <p>${item.category}</p>
+          <p class="status ${item.claimed ? 'claimed' : 'unclaimed'}">
+            Status: ${item.claimed ? 'Claimed' : 'Unclaimed'}
+          </p>
+        </div>
+      `;
+      card.addEventListener("click", () => openModal(item));
+      grid.appendChild(card);
+    });
+  }
 
-      function openModal(item) {
-        modal.style.display = "flex";
-        document.getElementById("modalImage").src = item.image_url;
-        document.getElementById("modalName").textContent = item.item_name;
-        document.getElementById("modalDescription").textContent =
-          item.description;
-        document.getElementById("modalLocation").textContent = item.location;
-        document.getElementById("modalDate").textContent = item.date_found;
-        document.getElementById("modalFoundBy").textContent = item.found_by;
-        document.getElementById("modalCategory").textContent = item.category;
-      }
+  function openModal(item) {
+    modal.style.display = "flex";
+    document.getElementById("modalImage").src = item.image_url;
+    document.getElementById("modalName").textContent = item.item_name;
+    document.getElementById("modalDescription").textContent = item.description;
+    document.getElementById("modalLocation").textContent = item.location;
+    document.getElementById("modalDate").textContent = item.date_found;
+    document.getElementById("modalFoundBy").textContent = item.found_by;
+    document.getElementById("modalCategory").textContent = item.category;
+  }
 
-      function closeModalWindow() {
-        modal.style.display = "none";
-      }
-    </script>
+  function closeModalWindow() {
+    modal.style.display = "none";
+  }
+</script>
+
   </body>
 </html>
-
 
 
 
