@@ -200,7 +200,6 @@
       <option value="Other">Other</option>
       </select>
 
-
       <label>Upload Image</label>
       <input type="file" id="image" accept="image/*" required>
 
@@ -240,9 +239,6 @@
     <option value="Miscellaneous">Miscellaneous</option>
     <option value="Other">Other</option>
     </select>
-
-
-
       <button id="saveChanges">Save Changes</button>
     </div>
   </div>
@@ -314,27 +310,43 @@ document.getElementById('postForm').addEventListener('submit', async (e) => {
   eventBus.dispatchEvent(new CustomEvent('item:added'));
 });
 
-
 async function fetchItems() {
   const { data, error } = await supabase.from('lost_items').select('*').order('date_found', { ascending: false });
   if (error) return alert('Fetch failed: ' + error.message);
 
   grid.innerHTML = '';
-  data.forEach(item => {
-    const card = document.createElement('div');
-    card.className = 'card';
-    card.innerHTML = `
-      <img src="${item.image_url}">
-      <div class="card-body">
-        <h4>${item.item_name}</h4>
-        <p>${item.category}</p>
-        <button class="deleteBtn">Delete</button>
-      </div>
-    `;
-    card.querySelector('.deleteBtn').addEventListener('click', (ev) => deleteItem(ev, item));
-    card.addEventListener('click', () => openModal(item));
-    grid.appendChild(card);
-  });
+data.forEach(item => {
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.innerHTML = `
+    <img src="${item.image_url}">
+    <div class="card-body">
+      <h4>${item.item_name}</h4>
+      <p>${item.category}</p>
+      <p class="status ${item.claimed ? 'claimed' : 'unclaimed'}">
+        Status: ${item.claimed ? 'Claimed' : 'Unclaimed'}
+      </p>
+      <button class="claimBtn">${item.claimed ? 'Mark Unclaimed' : 'Mark Claimed'}</button>
+      <button class="deleteBtn">Delete</button>
+    </div>
+  `;
+
+  card.querySelector('.deleteBtn').addEventListener('click', (ev) => deleteItem(ev, item));
+
+  card.querySelector('.claimBtn').addEventListener('click', () => toggleClaim(item));
+
+  card.addEventListener('click', () => openModal(item));
+  grid.appendChild(card);
+});
+}
+async function toggleClaim(item) {
+  const { error } = await supabase
+    .from('lost_items')
+    .update({ claimed: !item.claimed })
+    .eq('id', item.id);
+
+  if (error) return alert('Update failed: ' + error.message);
+  eventBus.dispatchEvent(new CustomEvent('item:updated'));
 }
 
 async function deleteItem(ev, item) {
@@ -388,11 +400,9 @@ saveBtn.onclick = async () => {
   document.body.classList.remove('modal-open');  
   eventBus.dispatchEvent(new CustomEvent('item:updated'));
 };
-
 </script>
 </body>
 </html>
-
 
 
 
