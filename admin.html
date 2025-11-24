@@ -1,167 +1,148 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Admin - Lost & Found Dashboard</title>
 
   <style>
-    body { 
+    body {
       font-family: Poppins, sans-serif;
-      background: url('https://i0.wp.com/metrocdodev.com/wp-content/uploads/2024/08/image-510.png?resize=1024%2C768&ssl=1') 
-      no-repeat center center fixed; 
-      background-size: cover; 
-      margin: 0; 
+      margin: 0;
+      background: url("https://i0.wp.com/metrocdodev.com/wp-content/uploads/2024/08/image-510.png?resize=1024%2C768&ssl=1")
+        no-repeat center center fixed;
+      background-size: cover;
     }
-
     body::before {
-      content: '';
+      content: "";
       position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background-color: rgba(0, 0, 0, 0.5);
+      inset: 0;
+      background-color: rgba(0,0,0,0.5);
       z-index: -1;
     }
 
-    h2 { margin: 0; }
-
-    label { 
-      display: block; 
-      margin-top: 10px; 
-      font-weight: 600; 
+    header {
+      background: rgba(44,62,80,0.85);
+      color: #fff;
+      padding: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
+    header h2 { margin: 0; }
 
-    input, textarea, select { 
-      width: 100%; 
-      padding: 10px; 
-      margin-top: 5px; 
-      border-radius: 6px; 
-      border: 1px solid #ccc; 
-      box-sizing: border-box;
+    button {
+      background: #3498db;
+      color: #fff;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 6px;
+      cursor: pointer;
     }
-
-    button { 
-      background: #3498db; 
-      border: none; 
-      padding: 8px 12px; 
-      color: #fff; 
-      border-radius: 6px; 
-      cursor: pointer; 
-    }
-
-    button:hover { background: #2980b9; }
-
-    header { 
-      background: rgba(44, 62, 80, 0.85); 
-      color: #fff; 
-      padding: 1rem; 
-      display: flex; 
-      justify-content: space-between; 
-      align-items: center; 
-    }
-
+    button:hover { opacity: 0.9; }
     #logoutBtn { background: #e74c3c; }
-    #logoutBtn:hover { background: #c0392b; }
 
-    .container { 
-      max-width: 800px; 
-      margin: 20px auto; 
-      background: rgba(255,255,255,0.95); 
-      padding: 25px; 
-      border-radius: 10px; 
-      box-shadow: 0 2px 8px rgba(0,0,0,0.2); 
+    .container {
+      max-width: 900px;
+      margin: 20px auto;
+      background: rgba(255,255,255,0.95);
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
     }
-    
-    #postbtn {
-      margin-top: 10px;
+    label { display:block; margin-top:10px; font-weight:600; }
+    input, textarea, select {
+      width:100%;
+      padding:10px;
+      margin-top:5px;
+      border-radius:6px;
+      border:1px solid #ccc;
+      box-sizing:border-box;
     }
+    .submit-btn { margin-top:10px; }
 
-    .grid { 
-      display: grid; 
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); 
-      gap: 20px; 
-      margin-top: 30px; 
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px,1fr));
+      gap: 20px;
+      margin-top: 30px;
     }
-
-    .card { 
-      background: #fff; 
-      border-radius: 10px; 
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1); 
-      overflow: hidden; 
-      display: flex; 
-      flex-direction: column; 
-      cursor: pointer; 
-      transition: transform 0.2s;
+    .card {
+      background:#fff;
+      border-radius:10px;
+      box-shadow:0 2px 6px rgba(0,0,0,0.1);
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+      cursor:pointer;
+      transition: transform .12s;
     }
+    .card:hover { transform: translateY(-4px); }
+    .card img { width:100%; height:160px; object-fit:cover; display:block; }
+    .card-body { padding:10px; display:flex; flex-direction:column; gap:6px; }
+    .card-body h4 { margin:0; font-size:1rem; }
+    .card-body p { margin:0;color:#555; font-size:.88rem; }
+    .card-actions { margin-top:auto; display:flex; gap:8px; }
+    .deleteBtn { background:#e74c3c; }
+    .claimBtn { background:#27ae60; }
 
-    .card:hover { transform: scale(1.02); }
-
-    .card img { 
-      width: 100%; 
-      height: 160px; 
-      object-fit: cover; 
+    #modal, #claimModal, #claimerViewer {
+      display:none;
+      position:fixed;
+      inset:0;
+      background: rgba(0,0,0,0.6);
+      z-index:1000;
+      align-items:center;
+      justify-content:center;
+      padding: 20px;
+      overflow-y:auto;
     }
-
-    .card-body { 
-      padding: 10px; 
-      flex: 1; 
-      display: flex; 
-      flex-direction: column; 
+    .modal-content {
+      background:#fff;
+      border-radius:10px;
+      width:100%;
+      max-width:540px;
+      max-height:90vh;
+      overflow-y:auto;
+      position:relative;
+      padding:18px;
+      box-shadow:0 6px 20px rgba(0,0,0,0.25);
     }
-
-    .card-body h4 { 
-      margin: 0 0 5px 0; 
-      font-size: 1rem; 
+    .modal-content img { 
+      width:auto; 
+      max-width:100%;
+      max-height:500px; 
+      object-fit:contain; 
+      border-radius:8px; 
+      display:block; 
+      margin:0 auto 10px auto; 
     }
-
-    .card-body p { 
-      margin: 0; 
-      font-size: 0.85rem; 
-      color: #555; 
-    }
-
-    .deleteBtn { 
-      margin-top: 10px; 
-      background: #e74c3c; 
-    }
-
-    .deleteBtn:hover { background: #c0392b; }
-
-    #modal { 
-      display: none; 
-      position: fixed; 
-      top: 0; left: 0; 
-      width: 100%; height: 100%; 
-      background: rgba(0,0,0,0.6); 
-      justify-content: center; 
-      align-items: center; 
-      overflow-y: auto; 
-      z-index: 1000; 
-    }
-
-    #modal-content { 
-      background: #fff; 
-      padding: 20px; 
-      border-radius: 10px; 
-      max-width: 500px; 
-      width: 90%; 
-      max-height: 90vh; 
-      overflow-y: auto; 
-      position: relative; 
-      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-    }
-    #saveChanges{
-      margin-top: 10px;
-    }
-    #closeModal { 
-      position: absolute; 
-      top: 10px; 
-      right: 15px; 
-      font-size: 1.5rem; 
-      cursor: pointer; 
+    .modal-close {
+      position:absolute;
+      top:10px; right:12px;
+      font-size:20px; cursor:pointer;
+      color:#333;
+      background:transparent; border:none;
     }
 
-    body.modal-open {
-      overflow: hidden;
+    .dropzone {
+      border: 2px dashed #cbd5e1;
+      border-radius: 8px;
+      padding: 14px;
+      text-align: center;
+      cursor: pointer;
+      color: #333;
+      margin-top:8px;
+    }
+    .dropzone.dragover { border-color: #3498db; background: #f6fbff; }
+    .claimer-preview { display:flex; gap:10px; align-items:center; margin-top:10px; }
+    .claimer-preview img { width:120px; height:80px; object-fit:cover; border-radius:6px; display:block; }
+
+    body.modal-open { overflow:hidden; }
+
+    @media (max-width:480px) {
+      .card img{ height:120px; }
+      .modal-content { padding:14px; max-width: 95%; }
     }
   </style>
 </head>
@@ -169,249 +150,487 @@
 <body>
   <header>
     <h2>Admin Dashboard</h2>
-    <button id="logoutBtn">Logout</button>
+    <div>
+      <button id="logoutBtn">Logout</button>
+    </div>
   </header>
 
   <div class="container">
     <form id="postForm">
       <label>Item Name</label>
-      <input type="text" id="name" required>
+      <input id="name" type="text" required />
 
       <label>Description</label>
       <textarea id="description" rows="3" required></textarea>
 
       <label>Location Found</label>
-      <input type="text" id="location" required>
+      <input id="location" type="text" required />
 
       <label>Date Found</label>
-      <input type="date" id="date" required>
+      <input id="date" type="date" required />
 
       <label>Found By (Student Name)</label>
-      <input type="text" id="found_by" required>
+      <input id="found_by" type="text" required />
 
       <label for="category">Category</label>
       <select id="category" required>
-      <option value="" disabled selected>Select Category</option>
-      <option value="Electronics">Electronics</option>
-      <option value="ID">ID</option>
-      <option value="School Supply">School Supply</option>
-      <option value="Personal Accessories">Personal Accessories</option>
-      <option value="Miscellaneous">Miscellaneous</option>
-      <option value="Other">Other</option>
+        <option value="" disabled selected>Select Category</option>
+        <option value="Electronics">Electronics</option>
+        <option value="ID">ID</option>
+        <option value="School Supply">School Supply</option>
+        <option value="Personal Accessories">Personal Accessories</option>
+        <option value="Miscellaneous">Miscellaneous</option>
+        <option value="Other">Other</option>
       </select>
 
       <label>Upload Image</label>
-      <input type="file" id="image" accept="image/*" required>
+      <input id="image" type="file" accept="image/*" required />
 
-      <button type="submit" id="postbtn">Post Item</button>
+      <button class="submit-btn" type="submit" id="postbtn">Post Item</button>
     </form>
 
     <div class="grid" id="itemsGrid"></div>
   </div>
 
   <div id="modal">
-    <div id="modal-content">
-      <span id="closeModal">&times;</span>
-      <img id="modalImage" src="" alt="" style="width:100%; border-radius:8px; margin-bottom:10px;">
+    <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="editTitle">
+      <button class="modal-close" id="closeModal" title="Close">&times;</button>
 
+      <img id="modalImage" src="" alt="Item image preview" />
       <label>Item Name</label>
-      <input type="text" id="modalName">
+      <input id="modalName" type="text" />
 
       <label>Description</label>
       <textarea id="modalDesc" rows="3"></textarea>
 
       <label>Location</label>
-      <input type="text" id="modalLoc">
+      <input id="modalLoc" type="text" />
 
       <label>Date Found</label>
-      <input type="date" id="modalDate">
+      <input id="modalDate" type="date" />
 
       <label>Found By</label>
-      <input type="text" id="modalFoundBy">
+      <input id="modalFoundBy" type="text" />
 
-     <label for="category">Category</label>
-    <select id="modalCat" required>
-    <option value="" disabled selected>Select Category</option>
-    <option value="Electronics">Electronics</option>
-    <option value="ID">ID</option>
-    <option value="School Supply">School Supply</option>
-    <option value="Personal Accessories">Personal Accessories</option>
-    <option value="Miscellaneous">Miscellaneous</option>
-    <option value="Other">Other</option>
-    </select>
-      <button id="saveChanges">Save Changes</button>
+      <label for="modalCat">Category</label>
+      <select id="modalCat">
+        <option value="Electronics">Electronics</option>
+        <option value="ID">ID</option>
+        <option value="School Supply">School Supply</option>
+        <option value="Personal Accessories">Personal Accessories</option>
+        <option value="Miscellaneous">Miscellaneous</option>
+        <option value="Other">Other</option>
+      </select>
+
+      <div style="display:flex; gap:8px; margin-top:12px;">
+        <button id="saveChanges">Save Changes</button>
+        <button id="openClaimFlow" style="background:#6c5ce7;">View Claimer ID</button>
+      </div>
     </div>
   </div>
 
-<script type="module">
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+  <div id="claimModal">
+    <div class="modal-content">
+      <button class="modal-close" id="closeClaimModal">&times;</button>
+      <h3 id="claimModalTitle">Claim item</h3>
 
-const supabase = createClient(
-  'https://qypvwkxmtrfgnfhhcxia.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF5cHZ3a3htdHJmZ25maGhjeGlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA3ODcxNjAsImV4cCI6MjA3NjM2MzE2MH0.Mdam3ABGs8eF0682iSuv6UAOAF7BOIWTzhTaz-w5m2s'
-);
+      <div id="claimDetails" style="margin-top:8px; font-size:0.95rem; color:#333;"></div>
 
-const grid = document.getElementById('itemsGrid');
-const modal = document.getElementById('modal');
-const closeModal = document.getElementById('closeModal');
-const saveBtn = document.getElementById('saveChanges');
-let currentItem = null;
+      <div id="claimDropZone" class="dropzone">
+        <p>Drag & drop claimer ID here, or click to choose file</p>
+        <input id="claimerFileInput" type="file" accept="image/*" style="display:none" />
+      </div>
 
-const eventBus = new EventTarget();
+      <div class="claimer-preview" id="claimerPreview" style="display:none">
+        <img id="claimerPreviewImg" src="" alt="Claimer ID preview" />
+        <div style="flex:1">
+          <p id="claimerFileName" style="margin:0;font-weight:600;"></p>
+          <p style="margin:6px 0 0;font-size:.9rem;color:#666">Uploaded claimer ID preview. Confirm to mark item claimed.</p>
+        </div>
+      </div>
 
-eventBus.addEventListener('item:added', fetchItems);
-eventBus.addEventListener('item:deleted', fetchItems);
-eventBus.addEventListener('item:updated', fetchItems);
-eventBus.addEventListener('page:loaded', fetchItems);   
-eventBus.addEventListener('db:changed', fetchItems);     
-
-supabase.channel('lost_items')
-  .on('postgres_changes', { event: '*', schema: 'public', table: 'lost_items' }, () => {
-    eventBus.dispatchEvent(new CustomEvent('db:changed')); 
-  })
-  .subscribe();
-
-window.addEventListener('load', async () => {
-  const { data: { session } } = await supabase.auth.getSession();
-  if (!session) location.href = 'index.html';
-  eventBus.dispatchEvent(new CustomEvent('page:loaded'));  
-});
-
-document.getElementById('logoutBtn').onclick = async () => {
-  await supabase.auth.signOut();
-  location.href = 'index.html';
-};
-
-document.getElementById('postForm').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const image = document.getElementById('image').files[0];
-  if (!image) return alert('Please upload an image');
-
-  const fileName = `${Date.now()}-${image.name}`;
-  const { error: uploadError } = await supabase.storage.from('lost-item-images').upload(fileName, image);
-  if (uploadError) return alert('Upload failed: ' + uploadError.message);
-
-  const { data: { publicUrl } } = supabase.storage.from('lost-item-images').getPublicUrl(fileName);
-
-  const item = {
-    item_name: document.getElementById('name').value,
-    description: document.getElementById('description').value,
-    location: document.getElementById('location').value,
-    date_found: document.getElementById('date').value,
-    found_by: document.getElementById('found_by').value,
-    category: document.getElementById('category').value,
-    image_url: publicUrl
-  };
-
-  const { error } = await supabase.from('lost_items').insert([item]);
-  if (error) return alert('Insert failed: ' + error.message);
-
-  e.target.reset();
-  eventBus.dispatchEvent(new CustomEvent('item:added'));
-});
-
-async function fetchItems() {
-  const { data, error } = await supabase.from('lost_items').select('*').order('date_found', { ascending: false });
-  if (error) return alert('Fetch failed: ' + error.message);
-
-  grid.innerHTML = '';
-data.forEach(item => {
-  const card = document.createElement('div');
-  card.className = 'card';
-  card.innerHTML = `
-    <img src="${item.image_url}">
-    <div class="card-body">
-      <h4>${item.item_name}</h4>
-      <p>${item.category}</p>
-      <p class="status ${item.claimed ? 'claimed' : 'unclaimed'}">
-        Status: ${item.claimed ? 'Claimed' : 'Unclaimed'}
-      </p>
-      <button class="claimBtn">${item.claimed ? 'Mark Unclaimed' : 'Mark Claimed'}</button>
-      <button class="deleteBtn">Delete</button>
+      <div style="display:flex; gap:8px; margin-top:12px;">
+        <button id="confirmClaimBtn" style="background:#27ae60;">Confirm Claim (upload ID)</button>
+        <button id="cancelClaimBtn" style="background:#e74c3c;">Cancel</button>
+        <button id="viewClaimerBtn" style="background:#555; display:none;">View Claimer ID</button>
+      </div>
     </div>
-  `;
+  </div>
 
-  card.querySelector('.deleteBtn').addEventListener('click', (ev) => deleteItem(ev, item));
+  <div id="claimerViewer">
+    <div class="modal-content">
+      <button class="modal-close" id="closeClaimerViewer">&times;</button>
+      <h3>Claimer ID</h3>
+      <img id="claimerViewerImg" src="" alt="Claimer ID" style="margin-top:8px; width:100%; height:auto; max-height:500px; object-fit:contain;"/>
+    </div>
+  </div>
 
-  card.querySelector('.claimBtn').addEventListener('click', () => toggleClaim(item));
+  <script type="module">
+    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
-  card.addEventListener('click', () => openModal(item));
-  grid.appendChild(card);
-});
-}
-async function toggleClaim(item) {
-  const { error } = await supabase
-    .from('lost_items')
-    .update({ claimed: !item.claimed })
-    .eq('id', item.id);
+    const supabase = createClient(
+      'https://qypvwkxmtrfgnfhhcxia.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF5cHZ3a3htdHJmZ25maGhjeGlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA3ODcxNjAsImV4cCI6MjA3NjM2MzE2MH0.Mdam3ABGs8eF0682iSuv6UAOAF7BOIWTzhTaz-w5m2s'
+    );
 
-  if (error) return alert('Update failed: ' + error.message);
-  eventBus.dispatchEvent(new CustomEvent('item:updated'));
-}
+    const grid = document.getElementById('itemsGrid');
+    const postForm = document.getElementById('postForm');
 
-async function deleteItem(ev, item) {
-  ev.stopPropagation();
-  if (!confirm('Delete this item?')) return;
-  const path = item.image_url.split('/').pop();
-  await supabase.storage.from('lost-item-images').remove([path]);
-  const { error } = await supabase.from('lost_items').delete().eq('id', item.id);
-  if (error) return alert('Delete failed: ' + error.message);
-  eventBus.dispatchEvent(new CustomEvent('item:deleted'));
-}
+    const modal = document.getElementById('modal');
+    const closeModal = document.getElementById('closeModal');
+    const saveChanges = document.getElementById('saveChanges');
+    const openClaimFlow = document.getElementById('openClaimFlow');
 
-function openModal(item) {
-  currentItem = item;
-  modal.style.display = 'flex';
-  document.body.classList.add('modal-open');
-  document.getElementById('modalImage').src = item.image_url;
-  document.getElementById('modalName').value = item.item_name;
-  document.getElementById('modalDesc').value = item.description;
-  document.getElementById('modalLoc').value = item.location;
-  document.getElementById('modalDate').value = item.date_found;
-  document.getElementById('modalFoundBy').value = item.found_by;
-  document.getElementById('modalCat').value = item.category;
-}
-  
-closeModal.onclick = () => {
-  modal.style.display = 'none';
-  document.body.classList.remove('modal-open');
-};
+    const claimModal = document.getElementById('claimModal');
+    const closeClaimModal = document.getElementById('closeClaimModal');
+    const claimDropZone = document.getElementById('claimDropZone');
+    const claimerFileInput = document.getElementById('claimerFileInput');
+    const claimerPreview = document.getElementById('claimerPreview');
+    const claimerPreviewImg = document.getElementById('claimerPreviewImg');
+    const claimerFileName = document.getElementById('claimerFileName');
+    const confirmClaimBtn = document.getElementById('confirmClaimBtn');
+    const cancelClaimBtn = document.getElementById('cancelClaimBtn');
+    const viewClaimerBtn = document.getElementById('viewClaimerBtn');
+    const claimDetails = document.getElementById('claimDetails');
 
-saveBtn.onclick = async () => {
-  if (!currentItem) return;
+    const claimerViewer = document.getElementById('claimerViewer');
+    const closeClaimerViewer = document.getElementById('closeClaimerViewer');
+    const claimerViewerImg = document.getElementById('claimerViewerImg');
 
-  const updates = {
-    item_name: modalName.value,
-    description: modalDesc.value,
-    location: modalLoc.value,
-    date_found: modalDate.value,
-    found_by: modalFoundBy.value,
-    category: document.getElementById('modalCat').value
-  };
+    let currentItem = null;
+    let claimerFile = null;   
+    const eventBus = new EventTarget();
 
-  const { error } = await supabase
-    .from('lost_items')
-    .update(updates)
-    .eq('id', currentItem.id);
+    eventBus.addEventListener('refresh', fetchItems);
+    supabase
+      .channel('lost_items')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'lost_items' }, () => eventBus.dispatchEvent(new CustomEvent('refresh')))
+      .subscribe();
 
-  if (error) return alert('Update failed: ' + error.message);
+    window.addEventListener('load', async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) location.href = 'index.html';
+      fetchItems();
+    });
 
-  modal.style.display = 'none';
-  document.body.classList.remove('modal-open');  
-  eventBus.dispatchEvent(new CustomEvent('item:updated'));
-};
-</script>
+    document.getElementById('logoutBtn').onclick = async () => {
+      await supabase.auth.signOut();
+      location.href = 'index.html';
+    };
+
+    postForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      try {
+        const imageFile = document.getElementById('image').files[0];
+        if (!imageFile) return alert('Please upload an item image.');
+
+        console.log('Uploading image:', imageFile.name);
+        const fileName = `${Date.now()}-${imageFile.name}`;
+        const { error: uploadError } = await supabase.storage.from('lost-item-images').upload(fileName, imageFile);
+        if (uploadError) {
+          console.error('Upload error:', uploadError);
+          return alert('Image upload failed: ' + uploadError.message);
+        }
+
+        const { data: { publicUrl } } = supabase.storage.from('lost-item-images').getPublicUrl(fileName);
+        console.log('Image uploaded:', publicUrl);
+
+        const item = {
+          item_name: document.getElementById('name').value.trim(),
+          description: document.getElementById('description').value.trim(),
+          location: document.getElementById('location').value.trim(),
+          date_found: document.getElementById('date').value,
+          found_by: document.getElementById('found_by').value.trim(),
+          category: document.getElementById('category').value,
+          image_url: publicUrl,
+          claimed: false,
+          claimer_id_url: null
+        };
+
+        console.log('Inserting item:', item);
+        const { error } = await supabase.from('lost_items').insert([item]);
+        if (error) {
+          console.error('Insert error:', error);
+          return alert('Insert failed: ' + error.message);
+        }
+
+        console.log('Item posted successfully!');
+        postForm.reset();
+        eventBus.dispatchEvent(new CustomEvent('refresh'));
+      } catch (err) {
+        console.error('Unexpected error:', err);
+        alert('An error occurred: ' + (err.message || err));
+      }
+    });
+
+    async function fetchItems() {
+      const { data, error } = await supabase.from('lost_items').select('*').order('date_found', { ascending: false });
+      if (error) return alert('Fetch failed: ' + error.message);
+
+      grid.innerHTML = '';
+      data.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        const safeName = escapeHtml(item.item_name || '');
+        const safeCategory = escapeHtml(item.category || '');
+        const statusText = item.claimed ? 'Claimed' : 'Unclaimed';
+        const claimBtnText = item.claimed ? 'Unclaim' : 'Mark Claimed';
+
+        card.innerHTML = `
+          <img src="${item.image_url}" alt="${safeName}">
+          <div class="card-body">
+            <h4>${safeName}</h4>
+            <p>${safeCategory}</p>
+            <p style="margin:4px 0 0;font-weight:600;color:${item.claimed ? '#27ae60' : '#c0392b'}">${statusText}</p>
+            <div class="card-actions">
+              <button class="claimBtn">${claimBtnText}</button>
+              <button class="deleteBtn">Delete</button>
+              <button class="viewBtn" style="background:#7f8c8d;">View</button>
+            </div>
+          </div>
+        `;
+
+        card.querySelector('.deleteBtn').addEventListener('click', async (ev) => {
+          ev.stopPropagation();
+          if (!confirm('Delete this item?')) return;
+          try {
+            if (item.image_url) {
+              const path = decodeURIComponent(item.image_url.split('/').pop());
+              await supabase.storage.from('lost-item-images').remove([path]);
+            }
+            if (item.claimer_id_url) {
+              const claimerPath = decodeURIComponent(item.claimer_id_url.split('/').pop());
+              await supabase.storage.from('claimer-ids').remove([claimerPath]);
+            }
+          } catch (err) {
+          }
+          const { error } = await supabase.from('lost_items').delete().eq('id', item.id);
+          if (error) return alert('Delete failed: ' + error.message);
+          eventBus.dispatchEvent(new CustomEvent('refresh'));
+        });
+
+        card.querySelector('.claimBtn').addEventListener('click', (ev) => {
+          ev.stopPropagation();
+          if (item.claimed) {
+            if (!confirm('Mark this item as unclaimed and remove claimer ID?')) return;
+            unclaimItem(item);
+          } else {
+            openClaimModal(item);
+          }
+        });
+
+        card.querySelector('.viewBtn').addEventListener('click', (ev) => {
+          ev.stopPropagation();
+          openEditModal(item);
+        });
+
+        card.addEventListener('click', () => openEditModal(item));
+
+        grid.appendChild(card);
+      });
+    }
+
+    function openEditModal(item) {
+      currentItem = item;
+      document.getElementById('modalImage').src = item.image_url || '';
+      document.getElementById('modalName').value = item.item_name || '';
+      document.getElementById('modalDesc').value = item.description || '';
+      document.getElementById('modalLoc').value = item.location || '';
+      document.getElementById('modalDate').value = item.date_found ? item.date_found.slice(0,10) : '';
+      document.getElementById('modalFoundBy').value = item.found_by || '';
+      document.getElementById('modalCat').value = item.category || '';
+      modal.style.display = 'flex';
+      document.body.classList.add('modal-open');
+    }
+
+    closeModal.addEventListener('click', () => {
+      modal.style.display = 'none';
+      document.body.classList.remove('modal-open');
+      currentItem = null;
+    });
+
+    saveChanges.addEventListener('click', async () => {
+      if (!currentItem) return;
+      const updates = {
+        item_name: document.getElementById('modalName').value.trim(),
+        description: document.getElementById('modalDesc').value.trim(),
+        location: document.getElementById('modalLoc').value.trim(),
+        date_found: document.getElementById('modalDate').value,
+        found_by: document.getElementById('modalFoundBy').value.trim(),
+        category: document.getElementById('modalCat').value
+      };
+      const { error } = await supabase.from('lost_items').update(updates).eq('id', currentItem.id);
+      if (error) return alert('Update failed: ' + error.message);
+      modal.style.display = 'none';
+      document.body.classList.remove('modal-open');
+      currentItem = null;
+      eventBus.dispatchEvent(new CustomEvent('refresh'));
+    });
+
+    openClaimFlow.addEventListener('click', () => {
+      if (!currentItem) return;
+      
+      if (currentItem.claimer_id_url) {
+        console.log('Opening claimer viewer with URL:', currentItem.claimer_id_url);
+        claimerViewerImg.src = currentItem.claimer_id_url;
+        claimerViewerImg.onerror = () => {
+          console.error('Failed to load image:', currentItem.claimer_id_url);
+          alert('Failed to load claimer ID image. The image may have been deleted.');
+        };
+        claimerViewer.style.display = 'flex';
+      } else {
+        alert('No claimer ID available for this item. Use "Mark Claimed" button to upload one.');
+      }
+    });
+
+    function openClaimModal(item) {
+      currentItem = item;
+      claimerFile = null;
+      
+      if (item.claimer_id_url) {
+        claimerPreviewImg.src = item.claimer_id_url;
+        claimerFileName.textContent = 'Current claimer ID';
+        claimerPreview.style.display = 'flex';
+      } else {
+        claimerPreview.style.display = 'none';
+        claimerPreviewImg.src = '';
+        claimerFileName.textContent = '';
+      }
+      
+      viewClaimerBtn.style.display = item.claimer_id_url ? 'inline-block' : 'none';
+      claimDetails.textContent = `Item: ${item.item_name} — ${item.category} (${item.date_found ? item.date_found.slice(0,10) : 'no date'})`;
+      claimModal.style.display = 'flex';
+      document.body.classList.add('modal-open');
+    }
+
+    closeClaimModal.addEventListener('click', closeClaimModalFn);
+    cancelClaimBtn.addEventListener('click', closeClaimModalFn);
+    function closeClaimModalFn() {
+      claimModal.style.display = 'none';
+      document.body.classList.remove('modal-open');
+      currentItem = null;
+      claimerFile = null;
+    }
+
+    claimDropZone.addEventListener('click', () => claimerFileInput.click());
+    claimDropZone.addEventListener('dragover', (e) => { e.preventDefault(); claimDropZone.classList.add('dragover'); });
+    claimDropZone.addEventListener('dragleave', () => claimDropZone.classList.remove('dragover'));
+    claimDropZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      claimDropZone.classList.remove('dragover');
+      const f = e.dataTransfer.files && e.dataTransfer.files[0];
+      if (f && f.type.startsWith('image/')) {
+        claimerFileInput.files = e.dataTransfer.files;
+        handleClaimerFile(f);
+      } else {
+        alert('Please drop a valid image file for claimer ID.');
+      }
+    });
+
+    claimerFileInput.addEventListener('change', () => {
+      const f = claimerFileInput.files[0];
+      if (f) handleClaimerFile(f);
+    });
+
+    function handleClaimerFile(file) {
+      claimerFile = file;
+      claimerPreviewImg.src = URL.createObjectURL(file);
+      claimerFileName.textContent = file.name;
+      claimerPreview.style.display = 'flex';
+    }
+
+    confirmClaimBtn.addEventListener('click', async () => {
+      if (!currentItem) return alert('No item selected.');
+      if (!claimerFile && !currentItem.claimer_id_url) return alert('Please upload a claimer ID image.');
+
+      try {
+        let publicUrl = currentItem.claimer_id_url || null;
+
+        if (claimerFile) {
+          const sanitizedName = claimerFile.name.replace(/\s+/g, '_');
+          const fileName = `${currentItem.id}-claimer-${Date.now()}-${sanitizedName}`;
+          console.log('Uploading claimer ID:', fileName);
+          
+          const { error: uploadError } = await supabase.storage.from('claimer-ids').upload(fileName, claimerFile);
+          if (uploadError) {
+            console.error('Upload error:', uploadError);
+            return alert('Claimer ID upload failed: ' + uploadError.message);
+          }
+          
+          const { data: { publicUrl: p } } = supabase.storage.from('claimer-ids').getPublicUrl(fileName);
+          publicUrl = p;
+          console.log('Claimer ID uploaded successfully:', publicUrl);
+        }
+
+        const { error } = await supabase.from('lost_items').update({ claimed: true, claimer_id_url: publicUrl }).eq('id', currentItem.id);
+        if (error) return alert('Failed to mark claimed: ' + error.message);
+
+        closeClaimModalFn();
+        eventBus.dispatchEvent(new CustomEvent('refresh'));
+        alert('Item marked as claimed.');
+      } catch (err) {
+        console.error('Claim flow error:', err);
+        alert('Claim flow failed: ' + (err.message || err));
+      }
+    });
+
+    viewClaimerBtn.addEventListener('click', () => {
+      if (!currentItem || !currentItem.claimer_id_url) return alert('No claimer ID available.');
+      console.log('Viewing claimer ID:', currentItem.claimer_id_url);
+      alert('Loading image from: ' + currentItem.claimer_id_url); // Show URL to user
+      claimerViewerImg.src = currentItem.claimer_id_url;
+      claimerViewerImg.onerror = () => {
+        console.error('Failed to load image:', currentItem.claimer_id_url);
+        alert('Failed to load claimer ID image. The image may have been deleted or the storage bucket may not be public.');
+      };
+      claimerViewer.style.display = 'flex';
+    });
+    closeClaimerViewer.addEventListener('click', () => {
+      claimerViewer.style.display = 'none';
+    });
+
+    claimerViewer.addEventListener('click', (e) => { if (e.target === claimerViewer) claimerViewer.style.display = 'none'; });
+
+    async function unclaimItem(item) {
+      try {
+
+        if (item.claimer_id_url) {
+          const path = decodeURIComponent(item.claimer_id_url.split('/').pop());
+          await supabase.storage.from('claimer-ids').remove([path]);
+        }
+        const { error } = await supabase.from('lost_items').update({ claimed: false, claimer_id_url: null }).eq('id', item.id);
+        if (error) return alert('Failed to unclaim: ' + error.message);
+        eventBus.dispatchEvent(new CustomEvent('refresh'));
+      } catch (err) {
+        alert('Unclaim failed: ' + (err.message || err));
+      }
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/[&<>"'`=\/]/g, function (s) {
+        return ({
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+          "'": '&#39;',
+          '/': '&#x2F;',
+          '`': '&#x60;',
+          '=': '&#x3D;'
+        })[s];
+      });
+    }
+
+    [modal, claimModal].forEach(m => m.addEventListener('click', (e) => {
+      if (e.target === m) {
+        m.style.display = 'none';
+        document.body.classList.remove('modal-open');
+        currentItem = null;
+      }
+    }));
+
+  </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
